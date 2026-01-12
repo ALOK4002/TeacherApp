@@ -1,6 +1,123 @@
 @WebAPI_HostAddress = http://localhost:5162
+@token = your-jwt-token-here
 
 GET {{WebAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+# Authentication - Get JWT Token
+POST {{WebAPI_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "Admin123!"
+}
+
+###
+
+# Initialize Search Indexes (Admin - First Time Only)
+POST {{WebAPI_HostAddress}}/api/search/initialize
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+###
+
+# Sync All Data to Search Indexes (Admin)
+POST {{WebAPI_HostAddress}}/api/search/sync
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+###
+
+# Sync Specific Type (Teachers Only)
+POST {{WebAPI_HostAddress}}/api/search/sync?type=teachers
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+###
+
+# Unified Search - Search across all entities
+POST {{WebAPI_HostAddress}}/api/search/unified
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "query": "delhi",
+  "searchTypes": ["teachers", "schools", "notices"],
+  "skip": 0,
+  "top": 10
+}
+
+###
+
+# Search Teachers Only
+POST {{WebAPI_HostAddress}}/api/search/teachers
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "query": "john",
+  "filters": ["District eq 'Patna'"],
+  "facets": ["District", "Class"],
+  "orderBy": "Name asc",
+  "skip": 0,
+  "top": 20,
+  "includeTotalCount": true
+}
+
+###
+
+# Search Schools Only
+POST {{WebAPI_HostAddress}}/api/search/schools
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "query": "public school",
+  "filters": ["IsActive eq true"],
+  "facets": ["District", "Type"],
+  "orderBy": "Name asc",
+  "skip": 0,
+  "top": 15
+}
+
+###
+
+# Search Notices Only
+POST {{WebAPI_HostAddress}}/api/search/notices
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "query": "meeting",
+  "filters": ["Category eq 'Announcement'"],
+  "facets": ["Category", "Priority"],
+  "orderBy": "PostedDate desc",
+  "skip": 0,
+  "top": 10
+}
+
+###
+
+# Get Search Suggestions
+GET {{WebAPI_HostAddress}}/api/search/suggestions?query=del&type=teachers
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+
+# Get Autocomplete Suggestions
+GET {{WebAPI_HostAddress}}/api/search/autocomplete?query=pat&type=schools
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+
+# Get Search Statistics (Admin)
+GET {{WebAPI_HostAddress}}/api/search/stats
+Authorization: Bearer {{token}}
 Accept: application/json
 
 ###

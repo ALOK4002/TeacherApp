@@ -17,3 +17,4 @@
 /Users/alokbabu/TeacherVS_2/Backend/Infrastructure/obj/Debug/net10.0/Infrastructure.pdb
 /Users/alokbabu/TeacherVS_2/Backend/Infrastructure/obj/Debug/net10.0/Infrastructure.genruntimeconfig.cache
 /Users/alokbabu/TeacherVS_2/Backend/Infrastructure/obj/Debug/net10.0/ref/Infrastructure.dll
+/Users/alokbabu/TeacherVS_2/Backend/Infrastructure/obj/Debug/net10.0/Infrastructure.sourcelink.json

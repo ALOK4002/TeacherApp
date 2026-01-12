@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../environments/environment';
+import { environment } from '../../environments/environment';
 
 export interface SearchRequest {
   query: string;
@@ -136,8 +136,11 @@ export class SearchService {
 
   // Sync data to search indexes (Admin)
   syncData(type?: string): Observable<any> {
-    const params = type ? { type } : {};
-    return this.http.post(`${this.apiUrl}/sync`, {}, { params });
+    if (type) {
+      return this.http.post(`${this.apiUrl}/sync`, {}, { params: { type } });
+    } else {
+      return this.http.post(`${this.apiUrl}/sync`, {});
+    }
   }
 
   // Get search statistics

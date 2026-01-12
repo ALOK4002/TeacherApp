@@ -222,11 +222,8 @@
 /Users/alokbabu/TeacherVS_2/Backend/WebAPI/bin/Debug/net10.0/WebAPI.staticwebassets.runtime.json
 /Users/alokbabu/TeacherVS_2/Backend/WebAPI/obj/Debug/net10.0/compressed/zi01od7du0-{0}-ctwocqgjrn-ctwocqgjrn.gz
 /Users/alokbabu/TeacherVS_2/Backend/WebAPI/obj/Debug/net10.0/compressed/mekcj3kbde-{0}-vagikyz9qx-vagikyz9qx.gz
-/Users/alokbabu/TeacherVS_2/Backend/WebAPI/obj/Debug/net10.0/compressed/n3ov4dbeyb-{0}-3h2zkjlwed-3h2zkjlwed.gz
-/Users/alokbabu/TeacherVS_2/Backend/WebAPI/obj/Debug/net10.0/compressed/468ac3tedj-{0}-68uil0wh9b-68uil0wh9b.gz
 /Users/alokbabu/TeacherVS_2/Backend/WebAPI/obj/Debug/net10.0/compressed/ein0e9ezm8-{0}-1xaxmzg2an-1xaxmzg2an.gz
 /Users/alokbabu/TeacherVS_2/Backend/WebAPI/obj/Debug/net10.0/compressed/56nwv9e2su-{0}-tvy3j3n584-tvy3j3n584.gz
-/Users/alokbabu/TeacherVS_2/Backend/WebAPI/bin/Debug/net10.0/wwwroot/browser/main-XDECUJ5C.js.gz
 /Users/alokbabu/TeacherVS_2/Backend/WebAPI/bin/Debug/net10.0/wwwroot/prerendered-routes.json.gz
 /Users/alokbabu/TeacherVS_2/Backend/WebAPI/bin/Debug/net10.0/wwwroot/browser/styles-GTAMBTGU.css.gz
 /Users/alokbabu/TeacherVS_2/Backend/WebAPI/bin/Debug/net10.0/wwwroot/browser/favicon.ico.gz
@@ -235,7 +232,6 @@
 /Users/alokbabu/TeacherVS_2/Backend/WebAPI/bin/Debug/net10.0/wwwroot/3rdpartylicenses.txt
 /Users/alokbabu/TeacherVS_2/Backend/WebAPI/bin/Debug/net10.0/wwwroot/browser/favicon.ico
 /Users/alokbabu/TeacherVS_2/Backend/WebAPI/bin/Debug/net10.0/wwwroot/browser/index.html
-/Users/alokbabu/TeacherVS_2/Backend/WebAPI/bin/Debug/net10.0/wwwroot/browser/main-XDECUJ5C.js
 /Users/alokbabu/TeacherVS_2/Backend/WebAPI/bin/Debug/net10.0/wwwroot/browser/styles-GTAMBTGU.css
 /Users/alokbabu/TeacherVS_2/Backend/WebAPI/bin/Debug/net10.0/wwwroot/prerendered-routes.json
 /Users/alokbabu/TeacherVS_2/Backend/WebAPI/bin/Debug/net10.0/authapp.db
@@ -244,3 +240,8 @@
 /Users/alokbabu/TeacherVS_2/Backend/WebAPI/bin/Debug/net10.0/Microsoft.Bcl.AsyncInterfaces.dll
 /Users/alokbabu/TeacherVS_2/Backend/WebAPI/bin/Debug/net10.0/System.ClientModel.dll
 /Users/alokbabu/TeacherVS_2/Backend/WebAPI/bin/Debug/net10.0/System.Memory.Data.dll
+/Users/alokbabu/TeacherVS_2/Backend/WebAPI/obj/Debug/net10.0/WebAPI.sourcelink.json
+/Users/alokbabu/TeacherVS_2/Backend/WebAPI/bin/Debug/net10.0/wwwroot/browser/main-Y27EF5AB.js.gz
+/Users/alokbabu/TeacherVS_2/Backend/WebAPI/bin/Debug/net10.0/wwwroot/browser/main-Y27EF5AB.js
+/Users/alokbabu/TeacherVS_2/Backend/WebAPI/obj/Debug/net10.0/compressed/n3ov4dbeyb-{0}-6rzig11esm-6rzig11esm.gz
+/Users/alokbabu/TeacherVS_2/Backend/WebAPI/obj/Debug/net10.0/compressed/m1bthru7ln-{0}-w9n0y1rzqd-w9n0y1rzqd.gz
