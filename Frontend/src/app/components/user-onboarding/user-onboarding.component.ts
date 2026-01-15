@@ -131,4 +131,9 @@ export class UserOnboardingComponent implements OnInit {
     if (!user.isActive) return 'Inactive';
     return 'Approved';
   }
+
+  logout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 }

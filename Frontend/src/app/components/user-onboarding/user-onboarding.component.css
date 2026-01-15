@@ -5,8 +5,19 @@
 }
 
 .header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   margin-bottom: var(--spacing-xxl);
   color: var(--primary-color);
+}
+
+.header-title {
+  flex: 1;
+}
+
+.logout-btn {
+  margin-top: var(--spacing-xs);
 }
 
 .education-icon {
