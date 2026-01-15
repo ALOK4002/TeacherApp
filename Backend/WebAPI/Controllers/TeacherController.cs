@@ -148,4 +148,18 @@ public class TeacherController : ControllerBase
             return StatusCode(500, new { message = "An error occurred while retrieving teachers by school" });
         }
     }
+
+    [HttpPost("report")]
+    public async Task<IActionResult> GetTeacherReport([FromBody] TeacherReportSearchRequest request)
+    {
+        try
+        {
+            var result = await _teacherService.GetTeacherReportAsync(request);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { message = "An error occurred while retrieving the teacher report" });
+        }
+    }
 }

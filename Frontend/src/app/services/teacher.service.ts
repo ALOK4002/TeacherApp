@@ -1,20 +1,17 @@
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { isPlatformBrowser } from '@angular/common';
-import { Teacher, CreateTeacher, UpdateTeacher, District, Pincode } from '../models/teacher.models';
+import { Teacher, CreateTeacher, UpdateTeacher, District, Pincode, TeacherReport, TeacherReportSearchRequest, PagedResult } from '../models/teacher.models';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TeacherService {
-  private apiUrl = 'http://localhost:5162/api/teacher';
-  private utilityUrl = 'http://localhost:5162/api/utility';
+  private apiUrl = `${environment.apiUrl}/teacher`;
+  private utilityUrl = `${environment.apiUrl}/utility`;
 
-  constructor(
-    private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  constructor(private http: HttpClient) {}
 
   getAllTeachers(): Observable<Teacher[]> {
     return this.http.get<Teacher[]>(this.apiUrl);
@@ -55,5 +52,9 @@ export class TeacherService {
 
   getDistrictByPincode(pincode: string): Observable<{district: string}> {
     return this.http.get<{district: string}>(`${this.utilityUrl}/district/${pincode}`);
+  }
+
+  getTeacherReport(request: TeacherReportSearchRequest): Observable<PagedResult<TeacherReport>> {
+    return this.http.post<PagedResult<TeacherReport>>(`${this.apiUrl}/report`, request);
   }
 }

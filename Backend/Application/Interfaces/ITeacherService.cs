@@ -11,4 +11,5 @@ public interface ITeacherService
     Task<bool> DeleteTeacherAsync(int id);
     Task<IEnumerable<TeacherDto>> GetTeachersByDistrictAsync(string district);
     Task<IEnumerable<TeacherDto>> GetTeachersBySchoolIdAsync(int schoolId);
+    Task<PagedResult<TeacherReportDto>> GetTeacherReportAsync(TeacherReportSearchRequest request);
 }

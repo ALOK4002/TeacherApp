@@ -1,0 +1,237 @@
+<div class="dashboard-container">
+  <div class="header-section">
+    <div class="welcome-message">
+      <h1 class="ms-fontSize-32 ms-fontWeight-bold">
+        <span class="education-icon">👋</span>
+        Welcome, {{ userName }}!
+      </h1>
+      <p class="ms-fontSize-14" style="color: var(--neutral-gray-90); margin-top: 8px;">
+        {{ userEmail }}
+      </p>
+    </div>
+    <button class="ms-Button ms-Button--secondary logout-btn" (click)="logout()">
+      <span class="education-icon">🚪</span>
+      Logout
+    </button>
+  </div>
+
+  <div class="loading-message" *ngIf="isLoading">
+    <span class="loading-spinner">⏳</span>
+    Loading your dashboard...
+  </div>
+
+  <div class="dashboard-content" *ngIf="!isLoading">
+    <!-- Quick Stats -->
+    <div class="stats-grid">
+      <div class="stat-card ms-Card">
+        <div class="stat-icon" style="background: var(--gradient-knowledge);">
+          <span class="education-icon">📄</span>
+        </div>
+        <div class="stat-info">
+          <h3 class="stat-value">{{ documents.length }}</h3>
+          <p class="stat-label">Documents Uploaded</p>
+        </div>
+      </div>
+
+      <div class="stat-card ms-Card">
+        <div class="stat-icon" style="background: var(--gradient-creativity);">
+          <span class="education-icon">✅</span>
+        </div>
+        <div class="stat-info">
+          <h3 class="stat-value">{{ userProfile ? 'Complete' : 'Incomplete' }}</h3>
+          <p class="stat-label">Profile Status</p>
+        </div>
+      </div>
+
+      <div class="stat-card ms-Card">
+        <div class="stat-icon" style="background: var(--gradient-growth);">
+          <span class="education-icon">🏫</span>
+        </div>
+        <div class="stat-info">
+          <h3 class="stat-value">{{ userProfile?.schoolName || 'N/A' }}</h3>
+          <p class="stat-label">School</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Summary -->
+    <div class="profile-section">
+      <div class="section-header">
+        <h2 class="ms-fontSize-24 ms-fontWeight-semibold">
+          <span class="education-icon">👤</span>
+          Profile Summary
+        </h2>
+        <button class="ms-Button ms-Button--secondary" (click)="navigateToEditProfile()">
+          <span class="education-icon">✏️</span>
+          Edit Profile
+        </button>
+      </div>
+
+      <div class="profile-card ms-Card" *ngIf="userProfile">
+        <div class="profile-grid">
+          <div class="profile-item">
+            <span class="profile-label">
+              <span class="education-icon">👤</span>
+              Name
+            </span>
+            <span class="profile-value">{{ userProfile.teacherName }}</span>
+          </div>
+
+          <div class="profile-item">
+            <span class="profile-label">
+              <span class="education-icon">📧</span>
+              Email
+            </span>
+            <span class="profile-value">{{ userProfile.email }}</span>
+          </div>
+
+          <div class="profile-item">
+            <span class="profile-label">
+              <span class="education-icon">📱</span>
+              Contact
+            </span>
+            <span class="profile-value">{{ userProfile.contactNumber }}</span>
+          </div>
+
+          <div class="profile-item">
+            <span class="profile-label">
+              <span class="education-icon">🏛️</span>
+              District
+            </span>
+            <span class="profile-value">{{ userProfile.district }}</span>
+          </div>
+
+          <div class="profile-item">
+            <span class="profile-label">
+              <span class="education-icon">📍</span>
+              Pincode
+            </span>
+            <span class="profile-value">{{ userProfile.pincode }}</span>
+          </div>
+
+          <div class="profile-item">
+            <span class="profile-label">
+              <span class="education-icon">🏫</span>
+              School
+            </span>
+            <span class="profile-value">{{ userProfile.schoolName }}</span>
+          </div>
+
+          <div class="profile-item">
+            <span class="profile-label">
+              <span class="education-icon">📚</span>
+              Class Teaching
+            </span>
+            <span class="profile-value">{{ userProfile.classTeaching }}</span>
+          </div>
+
+          <div class="profile-item">
+            <span class="profile-label">
+              <span class="education-icon">📖</span>
+              Subject
+            </span>
+            <span class="profile-value">{{ userProfile.subject }}</span>
+          </div>
+
+          <div class="profile-item">
+            <span class="profile-label">
+              <span class="education-icon">🎓</span>
+              Qualification
+            </span>
+            <span class="profile-value">{{ userProfile.qualification }}</span>
+          </div>
+
+          <div class="profile-item">
+            <span class="profile-label">
+              <span class="education-icon">📅</span>
+              Date of Joining
+            </span>
+            <span class="profile-value">{{ userProfile.dateOfJoining | date: 'MMM d, yyyy' }}</span>
+          </div>
+
+          <div class="profile-item full-width">
+            <span class="profile-label">
+              <span class="education-icon">🏠</span>
+              Address
+            </span>
+            <span class="profile-value">{{ userProfile.address }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="no-profile-card ms-Card" *ngIf="!userProfile">
+        <span class="education-icon" style="font-size: 48px;">📝</span>
+        <h3>Profile Not Complete</h3>
+        <p>Please complete your profile to access all features</p>
+        <button class="ms-Button ms-Button--knowledge" (click)="navigateToEditProfile()">
+          <span class="education-icon">📝</span>
+          Complete Profile
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="actions-section">
+      <h2 class="ms-fontSize-24 ms-fontWeight-semibold" style="margin-bottom: 20px;">
+        <span class="education-icon">⚡</span>
+        Quick Actions
+      </h2>
+
+      <div class="actions-grid">
+        <div class="action-card ms-Card" (click)="navigateToDocuments()">
+          <div class="action-icon" style="background: var(--gradient-knowledge);">
+            <span class="education-icon">📄</span>
+          </div>
+          <h3 class="action-title">My Documents</h3>
+          <p class="action-description">Upload and manage your documents</p>
+          <div class="action-badge">{{ documents.length }} documents</div>
+        </div>
+
+        <div class="action-card ms-Card" (click)="navigateToEditProfile()">
+          <div class="action-icon" style="background: var(--gradient-creativity);">
+            <span class="education-icon">✏️</span>
+          </div>
+          <h3 class="action-title">Edit Profile</h3>
+          <p class="action-description">Update your personal information</p>
+        </div>
+
+        <div class="action-card ms-Card" routerLink="/about">
+          <div class="action-icon" style="background: var(--gradient-growth);">
+            <span class="education-icon">ℹ️</span>
+          </div>
+          <h3 class="action-title">About Portal</h3>
+          <p class="action-description">Learn more about Bihar Teacher Portal</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Documents -->
+    <div class="recent-documents-section" *ngIf="documents.length > 0">
+      <h2 class="ms-fontSize-24 ms-fontWeight-semibold" style="margin-bottom: 20px;">
+        <span class="education-icon">📚</span>
+        Recent Documents
+      </h2>
+
+      <div class="documents-list">
+        <div class="document-item ms-Card" *ngFor="let doc of documents.slice(0, 5)">
+          <div class="document-icon">
+            <span class="education-icon">📄</span>
+          </div>
+          <div class="document-details">
+            <h4 class="document-name">{{ doc.originalFileName }}</h4>
+            <p class="document-meta">
+              <span class="document-type-badge">{{ doc.documentType }}</span>
+              <span class="document-date">{{ doc.uploadedDate | date: 'MMM d, yyyy' }}</span>
+            </p>
+          </div>
+          <div class="document-size">{{ doc.fileSizeFormatted }}</div>
+        </div>
+      </div>
+
+      <button class="ms-Button ms-Button--secondary view-all-btn" (click)="navigateToDocuments()">
+        View All Documents
+        <span class="education-icon">→</span>
+      </button>
+    </div>
+  </div>
+</div>

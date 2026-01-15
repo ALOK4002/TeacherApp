@@ -18,7 +18,7 @@ public class JwtService
         _audience = audience;
     }
 
-    public string GenerateToken(string userName, int userId)
+    public string GenerateToken(string userName, int userId, string role)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(_secretKey);
@@ -28,7 +28,8 @@ public class JwtService
             Subject = new ClaimsIdentity(new[]
             {
                 new Claim(ClaimTypes.Name, userName),
-                new Claim(ClaimTypes.NameIdentifier, userId.ToString())
+                new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+                new Claim(ClaimTypes.Role, role)
             }),
             Expires = DateTime.UtcNow.AddHours(24),
             Issuer = _issuer,

@@ -91,4 +91,89 @@ public class TeacherRepository : ITeacherRepository
             .OrderBy(t => t.TeacherName)
             .ToListAsync();
     }
+
+    public async Task<(IEnumerable<Teacher> Teachers, int TotalCount)> GetTeachersForReportAsync(
+        string? searchTerm, 
+        string? teacherName, 
+        string? schoolName, 
+        string? district, 
+        string? pincode, 
+        string? contactNumber,
+        int page, 
+        int pageSize, 
+        string sortBy, 
+        string sortDirection)
+    {
+        var query = _context.Teachers
+            .Include(t => t.School)
+            .Where(t => t.IsActive)
+            .AsQueryable();
+
+        // Apply search filters
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            var search = searchTerm.ToLower();
+            query = query.Where(t => 
+                t.TeacherName.ToLower().Contains(search) ||
+                t.School.SchoolName.ToLower().Contains(search) ||
+                t.District.ToLower().Contains(search) ||
+                t.Pincode.Contains(search) ||
+                t.ContactNumber.Contains(search));
+        }
+
+        if (!string.IsNullOrWhiteSpace(teacherName))
+        {
+            query = query.Where(t => t.TeacherName.ToLower().Contains(teacherName.ToLower()));
+        }
+
+        if (!string.IsNullOrWhiteSpace(schoolName))
+        {
+            query = query.Where(t => t.School.SchoolName.ToLower().Contains(schoolName.ToLower()));
+        }
+
+        if (!string.IsNullOrWhiteSpace(district))
+        {
+            query = query.Where(t => t.District.ToLower().Contains(district.ToLower()));
+        }
+
+        if (!string.IsNullOrWhiteSpace(pincode))
+        {
+            query = query.Where(t => t.Pincode.Contains(pincode));
+        }
+
+        if (!string.IsNullOrWhiteSpace(contactNumber))
+        {
+            query = query.Where(t => t.ContactNumber.Contains(contactNumber));
+        }
+
+        // Apply sorting
+        query = sortBy.ToLower() switch
+        {
+            "teachername" => sortDirection.ToLower() == "desc" 
+                ? query.OrderByDescending(t => t.TeacherName)
+                : query.OrderBy(t => t.TeacherName),
+            "schoolname" => sortDirection.ToLower() == "desc" 
+                ? query.OrderByDescending(t => t.School.SchoolName)
+                : query.OrderBy(t => t.School.SchoolName),
+            "district" => sortDirection.ToLower() == "desc" 
+                ? query.OrderByDescending(t => t.District)
+                : query.OrderBy(t => t.District),
+            "pincode" => sortDirection.ToLower() == "desc" 
+                ? query.OrderByDescending(t => t.Pincode)
+                : query.OrderBy(t => t.Pincode),
+            "contactnumber" => sortDirection.ToLower() == "desc" 
+                ? query.OrderByDescending(t => t.ContactNumber)
+                : query.OrderBy(t => t.ContactNumber),
+            _ => query.OrderBy(t => t.TeacherName)
+        };
+
+        var totalCount = await query.CountAsync();
+
+        var teachers = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (teachers, totalCount);
+    }
 }

@@ -1,0 +1,190 @@
+<div class="onboarding-container">
+  <div class="header-section">
+    <h1 class="ms-fontSize-32 ms-fontWeight-bold">
+      <span class="education-icon">👥</span>
+      User Onboarding
+    </h1>
+    <p class="ms-fontSize-14" style="color: var(--neutral-gray-90); margin-top: 8px;">
+      Manage user registrations and approvals
+    </p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-container">
+    <button 
+      class="tab-btn" 
+      [class.active]="activeTab === 'pending'"
+      (click)="switchTab('pending')"
+    >
+      <span class="education-icon">⏳</span>
+      Pending Users ({{ pendingUsers.length }})
+    </button>
+    <button 
+      class="tab-btn" 
+      [class.active]="activeTab === 'all'"
+      (click)="switchTab('all')"
+    >
+      <span class="education-icon">👥</span>
+      All Users ({{ allUsers.length }})
+    </button>
+  </div>
+
+  <!-- Messages -->
+  <div class="message-container">
+    <div class="success-message" *ngIf="successMessage">
+      <span class="education-icon">✅</span>
+      {{ successMessage }}
+    </div>
+    <div class="error-message" *ngIf="errorMessage">
+      <span class="education-icon">❌</span>
+      {{ errorMessage }}
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-message" *ngIf="isLoading">
+    <span class="loading-spinner">⏳</span>
+    Loading users...
+  </div>
+
+  <!-- Pending Users Tab -->
+  <div class="users-section" *ngIf="!isLoading && activeTab === 'pending'">
+    <div class="no-users" *ngIf="pendingUsers.length === 0">
+      <span class="education-icon" style="font-size: 48px;">✅</span>
+      <h3>No Pending Users</h3>
+      <p>All user registrations have been processed</p>
+    </div>
+
+    <div class="users-grid" *ngIf="pendingUsers.length > 0">
+      <div class="user-card ms-Card" *ngFor="let user of pendingUsers">
+        <div class="user-header">
+          <div class="user-avatar">
+            <span class="education-icon">👤</span>
+          </div>
+          <div class="user-info">
+            <h3 class="user-name">{{ user.userName }}</h3>
+            <p class="user-email">{{ user.email }}</p>
+          </div>
+          <div class="status-badge pending">
+            <span class="education-icon">⏳</span>
+            Pending
+          </div>
+        </div>
+
+        <div class="user-details">
+          <div class="detail-item">
+            <span class="detail-label">
+              <span class="education-icon">🎭</span>
+              Role
+            </span>
+            <span class="detail-value">{{ user.role }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">
+              <span class="education-icon">📅</span>
+              Registered
+            </span>
+            <span class="detail-value">{{ user.createdDate | date: 'MMM d, yyyy' }}</span>
+          </div>
+        </div>
+
+        <div class="user-actions">
+          <button class="action-btn approve-btn" (click)="approveUser(user.id)">
+            <span class="education-icon">✅</span>
+            Approve
+          </button>
+          <button class="action-btn reject-btn" (click)="openRejectDialog(user.id)">
+            <span class="education-icon">❌</span>
+            Reject
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- All Users Tab -->
+  <div class="users-section" *ngIf="!isLoading && activeTab === 'all'">
+    <div class="users-table-container">
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Registered</th>
+            <th>Approved Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of allUsers">
+            <td>
+              <div class="table-user">
+                <span class="education-icon">👤</span>
+                {{ user.userName }}
+              </div>
+            </td>
+            <td>{{ user.email }}</td>
+            <td>
+              <span class="role-badge" [class]="'role-' + user.role.toLowerCase()">
+                {{ user.role }}
+              </span>
+            </td>
+            <td>
+              <span class="status-badge" [class]="getUserStatusBadge(user)">
+                {{ getUserStatusLabel(user) }}
+              </span>
+            </td>
+            <td>{{ user.createdDate | date: 'MMM d, yyyy' }}</td>
+            <td>{{ user.approvedDate ? (user.approvedDate | date: 'MMM d, yyyy') : '-' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Reject Dialog -->
+  <div class="modal-overlay" *ngIf="showRejectDialog" (click)="closeRejectDialog()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="ms-fontSize-20">
+          <span class="education-icon">❌</span>
+          Reject User Registration
+        </h2>
+        <button class="close-btn" (click)="closeRejectDialog()">✕</button>
+      </div>
+
+      <form [formGroup]="rejectForm" (ngSubmit)="rejectUser()">
+        <div class="modal-body">
+          <p style="color: var(--neutral-gray-110); margin-bottom: 16px;">
+            Please provide a reason for rejecting this user registration. This will help the user understand why their application was not approved.
+          </p>
+          
+          <div class="ms-TextField">
+            <label class="ms-TextField-label">Rejection Reason *</label>
+            <textarea 
+              formControlName="rejectionReason" 
+              class="ms-TextField-field"
+              rows="4"
+              placeholder="Enter detailed reason for rejection (minimum 10 characters)"
+              [class.error]="rejectForm.get('rejectionReason')?.invalid && rejectForm.get('rejectionReason')?.touched"
+            ></textarea>
+            <div class="error-message" *ngIf="rejectForm.get('rejectionReason')?.invalid && rejectForm.get('rejectionReason')?.touched">
+              Rejection reason is required (minimum 10 characters)
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="ms-Button ms-Button--secondary" (click)="closeRejectDialog()">
+            Cancel
+          </button>
+          <button type="submit" class="ms-Button ms-Button--danger" [disabled]="rejectForm.invalid">
+            <span class="education-icon">❌</span>
+            Reject User
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

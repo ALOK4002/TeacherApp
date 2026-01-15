@@ -20,6 +20,7 @@ import { NoticeWidgetComponent } from '../notice-widget/notice-widget.component'
         <div class="header-actions">
           <span class="welcome-text">Welcome, {{ userName }}!</span>
           <button (click)="showAddModal = true" class="btn-add">Add Teacher</button>
+          <button (click)="goToTeacherReport()" class="btn-secondary">Teacher Report</button>
           <button (click)="goToNoticeBoard()" class="btn-secondary">Notice Board</button>
           <button (click)="goToAbout()" class="btn-secondary">About Us</button>
           <button (click)="goToSchools()" class="btn-secondary">Manage Schools</button>
@@ -58,7 +59,6 @@ import { NoticeWidgetComponent } from '../notice-widget/notice-widget.component'
               <th>Qualification</th>
               <th>Contact</th>
               <th>Email</th>
-              <th>Salary</th>
               <th>Status</th>
               <th>Actions</th>
             </tr>
@@ -74,13 +74,15 @@ import { NoticeWidgetComponent } from '../notice-widget/notice-widget.component'
               <td>{{ teacher.qualification }}</td>
               <td>{{ teacher.contactNumber }}</td>
               <td>{{ teacher.email }}</td>
-              <td>₹{{ teacher.salary | number:'1.0-0' }}</td>
               <td>
                 <span class="status" [class.active]="teacher.isActive" [class.inactive]="!teacher.isActive">
                   {{ teacher.isActive ? 'Active' : 'Inactive' }}
                 </span>
               </td>
               <td>
+                <button (click)="viewDocuments(teacher)" class="btn-documents" title="View Documents">
+                  📄 Documents
+                </button>
                 <button (click)="editTeacher(teacher)" class="btn-edit">Edit</button>
                 <button (click)="toggleTeacherStatus(teacher)" class="btn-toggle" 
                         [class.activate]="!teacher.isActive" [class.deactivate]="teacher.isActive">
@@ -217,13 +219,6 @@ import { NoticeWidgetComponent } from '../notice-widget/notice-widget.component'
                        placeholder="e.g., Mathematics, English, Science">
                 <div class="error-text" *ngIf="teacherForm.get('subject')?.invalid && teacherForm.get('subject')?.touched">
                   Subject is required
-                </div>
-              </div>
-              <div class="form-group">
-                <label for="salary">Monthly Salary (₹) *</label>
-                <input type="number" id="salary" formControlName="salary" class="form-control" min="0" step="100">
-                <div class="error-text" *ngIf="teacherForm.get('salary')?.invalid && teacherForm.get('salary')?.touched">
-                  Valid salary is required
                 </div>
               </div>
             </div>
@@ -436,13 +431,22 @@ import { NoticeWidgetComponent } from '../notice-widget/notice-widget.component'
       color: #721c24;
     }
 
-    .btn-edit, .btn-toggle {
+    .btn-documents, .btn-edit, .btn-toggle {
       padding: 6px 12px;
       border: none;
       border-radius: 4px;
       cursor: pointer;
       font-size: 12px;
       margin-right: 5px;
+    }
+
+    .btn-documents {
+      background-color: #6f42c1;
+      color: white;
+    }
+
+    .btn-documents:hover {
+      background-color: #5a32a3;
     }
 
     .btn-edit {
@@ -662,7 +666,6 @@ export class TeacherManagementComponent implements OnInit {
       contactNumber: ['', [Validators.required, Validators.pattern(/^\d{10}$/)]],
       email: ['', [Validators.required, Validators.email]],
       dateOfJoining: ['', Validators.required],
-      salary: ['', [Validators.required, Validators.min(1)]],
       isActive: [true]
     });
   }
@@ -801,7 +804,6 @@ export class TeacherManagementComponent implements OnInit {
       contactNumber: teacher.contactNumber,
       email: teacher.email,
       dateOfJoining: teacher.dateOfJoining.split('T')[0],
-      salary: teacher.salary,
       isActive: teacher.isActive
     });
     
@@ -892,12 +894,20 @@ export class TeacherManagementComponent implements OnInit {
     this.router.navigate(['/schools']);
   }
 
+  goToTeacherReport() {
+    this.router.navigate(['/teacher-report']);
+  }
+
   goToNoticeBoard() {
     this.router.navigate(['/notices']);
   }
 
   goToAbout() {
     this.router.navigate(['/about']);
+  }
+
+  viewDocuments(teacher: Teacher) {
+    this.router.navigate(['/teacher-documents', teacher.id]);
   }
 
   logout() {

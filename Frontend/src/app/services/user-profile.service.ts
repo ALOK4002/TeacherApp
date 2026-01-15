@@ -1,0 +1,30 @@
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
+import { UserProfile, CreateUserProfile, UpdateUserProfile } from '../models/user-profile.models';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class UserProfileService {
+  private apiUrl = `${environment.apiUrl}/userprofile`;
+
+  constructor(private http: HttpClient) {}
+
+  getMyProfile(): Observable<UserProfile> {
+    return this.http.get<UserProfile>(`${this.apiUrl}/my-profile`);
+  }
+
+  hasProfile(): Observable<boolean> {
+    return this.http.get<boolean>(`${this.apiUrl}/has-profile`);
+  }
+
+  createProfile(profile: CreateUserProfile): Observable<UserProfile> {
+    return this.http.post<UserProfile>(`${this.apiUrl}`, profile);
+  }
+
+  updateProfile(id: number, profile: UpdateUserProfile): Observable<UserProfile> {
+    return this.http.put<UserProfile>(`${this.apiUrl}/${id}`, profile);
+  }
+}

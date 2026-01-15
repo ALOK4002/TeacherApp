@@ -1,0 +1,241 @@
+<div class="self-declaration-container">
+  <div class="header-section">
+    <h1 class="ms-fontSize-32 ms-fontWeight-bold">
+      <span class="education-icon">📝</span>
+      Complete Your Profile
+    </h1>
+    <p class="ms-fontSize-14" style="color: var(--neutral-gray-90); margin-top: 8px;">
+      Please fill in your details to complete your teacher profile
+    </p>
+  </div>
+
+  <div class="form-card ms-Card ms-Card--elevated">
+    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+      <div class="form-grid">
+        <!-- Teacher Name -->
+        <div class="ms-TextField">
+          <label class="ms-TextField-label">
+            <span class="education-icon">👤</span>
+            Teacher Name *
+          </label>
+          <input 
+            type="text" 
+            formControlName="teacherName" 
+            class="ms-TextField-field"
+            placeholder="Enter full name"
+            [class.error]="profileForm.get('teacherName')?.invalid && profileForm.get('teacherName')?.touched"
+          >
+          <div class="error-message" *ngIf="profileForm.get('teacherName')?.invalid && profileForm.get('teacherName')?.touched">
+            Teacher name is required (min 3 characters)
+          </div>
+        </div>
+
+        <!-- Email (Pre-filled) -->
+        <div class="ms-TextField">
+          <label class="ms-TextField-label">
+            <span class="education-icon">📧</span>
+            Email *
+          </label>
+          <input 
+            type="email" 
+            formControlName="email" 
+            class="ms-TextField-field"
+            readonly
+            style="background-color: var(--neutral-gray-20);"
+          >
+        </div>
+
+        <!-- Contact Number -->
+        <div class="ms-TextField">
+          <label class="ms-TextField-label">
+            <span class="education-icon">📱</span>
+            Contact Number *
+          </label>
+          <input 
+            type="tel" 
+            formControlName="contactNumber" 
+            class="ms-TextField-field"
+            placeholder="10-digit mobile number"
+            [class.error]="profileForm.get('contactNumber')?.invalid && profileForm.get('contactNumber')?.touched"
+          >
+          <div class="error-message" *ngIf="profileForm.get('contactNumber')?.invalid && profileForm.get('contactNumber')?.touched">
+            Valid 10-digit contact number is required
+          </div>
+        </div>
+
+        <!-- District -->
+        <div class="ms-TextField">
+          <label class="ms-TextField-label">
+            <span class="education-icon">🏛️</span>
+            District *
+          </label>
+          <select 
+            formControlName="district" 
+            class="ms-TextField-field"
+            (change)="onDistrictChange()"
+            [class.error]="profileForm.get('district')?.invalid && profileForm.get('district')?.touched"
+          >
+            <option value="">Select District</option>
+            <option *ngFor="let district of districts" [value]="district.name">{{ district.name }}</option>
+          </select>
+          <div class="error-message" *ngIf="profileForm.get('district')?.invalid && profileForm.get('district')?.touched">
+            District is required
+          </div>
+        </div>
+
+        <!-- Pincode -->
+        <div class="ms-TextField">
+          <label class="ms-TextField-label">
+            <span class="education-icon">📍</span>
+            Pincode *
+          </label>
+          <select 
+            formControlName="pincode" 
+            class="ms-TextField-field"
+            [class.error]="profileForm.get('pincode')?.invalid && profileForm.get('pincode')?.touched"
+          >
+            <option value="">Select Pincode</option>
+            <option *ngFor="let pincode of pincodes" [value]="pincode">{{ pincode }}</option>
+          </select>
+          <div class="error-message" *ngIf="profileForm.get('pincode')?.invalid && profileForm.get('pincode')?.touched">
+            Pincode is required
+          </div>
+        </div>
+
+        <!-- Address -->
+        <div class="ms-TextField full-width">
+          <label class="ms-TextField-label">
+            <span class="education-icon">🏠</span>
+            Address *
+          </label>
+          <textarea 
+            formControlName="address" 
+            class="ms-TextField-field"
+            rows="3"
+            placeholder="Enter complete address"
+            [class.error]="profileForm.get('address')?.invalid && profileForm.get('address')?.touched"
+          ></textarea>
+          <div class="error-message" *ngIf="profileForm.get('address')?.invalid && profileForm.get('address')?.touched">
+            Address is required
+          </div>
+        </div>
+
+        <!-- School -->
+        <div class="ms-TextField full-width">
+          <label class="ms-TextField-label">
+            <span class="education-icon">🏫</span>
+            School *
+          </label>
+          <select 
+            formControlName="schoolId" 
+            class="ms-TextField-field"
+            [class.error]="profileForm.get('schoolId')?.invalid && profileForm.get('schoolId')?.touched"
+          >
+            <option value="">Select School</option>
+            <option *ngFor="let school of schools" [value]="school.id">
+              {{ school.schoolName }} - {{ school.district }}
+            </option>
+          </select>
+          <div class="error-message" *ngIf="profileForm.get('schoolId')?.invalid && profileForm.get('schoolId')?.touched">
+            School is required
+          </div>
+        </div>
+
+        <!-- Class Teaching -->
+        <div class="ms-TextField">
+          <label class="ms-TextField-label">
+            <span class="education-icon">📚</span>
+            Class Teaching *
+          </label>
+          <input 
+            type="text" 
+            formControlName="classTeaching" 
+            class="ms-TextField-field"
+            placeholder="e.g., Class 10"
+            [class.error]="profileForm.get('classTeaching')?.invalid && profileForm.get('classTeaching')?.touched"
+          >
+          <div class="error-message" *ngIf="profileForm.get('classTeaching')?.invalid && profileForm.get('classTeaching')?.touched">
+            Class teaching is required
+          </div>
+        </div>
+
+        <!-- Subject -->
+        <div class="ms-TextField">
+          <label class="ms-TextField-label">
+            <span class="education-icon">📖</span>
+            Subject *
+          </label>
+          <input 
+            type="text" 
+            formControlName="subject" 
+            class="ms-TextField-field"
+            placeholder="e.g., Mathematics"
+            [class.error]="profileForm.get('subject')?.invalid && profileForm.get('subject')?.touched"
+          >
+          <div class="error-message" *ngIf="profileForm.get('subject')?.invalid && profileForm.get('subject')?.touched">
+            Subject is required
+          </div>
+        </div>
+
+        <!-- Qualification -->
+        <div class="ms-TextField">
+          <label class="ms-TextField-label">
+            <span class="education-icon">🎓</span>
+            Qualification *
+          </label>
+          <input 
+            type="text" 
+            formControlName="qualification" 
+            class="ms-TextField-field"
+            placeholder="e.g., B.Ed, M.A."
+            [class.error]="profileForm.get('qualification')?.invalid && profileForm.get('qualification')?.touched"
+          >
+          <div class="error-message" *ngIf="profileForm.get('qualification')?.invalid && profileForm.get('qualification')?.touched">
+            Qualification is required
+          </div>
+        </div>
+
+        <!-- Date of Joining -->
+        <div class="ms-TextField">
+          <label class="ms-TextField-label">
+            <span class="education-icon">📅</span>
+            Date of Joining *
+          </label>
+          <input 
+            type="date" 
+            formControlName="dateOfJoining" 
+            class="ms-TextField-field"
+            [class.error]="profileForm.get('dateOfJoining')?.invalid && profileForm.get('dateOfJoining')?.touched"
+          >
+          <div class="error-message" *ngIf="profileForm.get('dateOfJoining')?.invalid && profileForm.get('dateOfJoining')?.touched">
+            Date of joining is required
+          </div>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div class="error-message" *ngIf="errorMessage" style="text-align: center; margin: 20px 0;">
+        <span class="education-icon">❌</span>
+        {{ errorMessage }}
+      </div>
+
+      <div class="success-message" *ngIf="successMessage" style="text-align: center; margin: 20px 0;">
+        <span class="education-icon">✅</span>
+        {{ successMessage }}
+      </div>
+
+      <!-- Submit Button -->
+      <div class="button-group">
+        <button 
+          type="submit" 
+          class="ms-Button ms-Button--knowledge"
+          [disabled]="isLoading"
+        >
+          <span class="education-icon" *ngIf="!isLoading">💾</span>
+          <span class="loading-spinner" *ngIf="isLoading">⏳</span>
+          {{ isLoading ? 'Saving Profile...' : 'Save Profile' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

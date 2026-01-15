@@ -27,22 +27,63 @@ import { AuthService } from '../../services/auth.service';
 
         <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
           <div class="ms-TextField">
-            <label class="ms-TextField-label" for="userNameOrEmail">
+            <label class="ms-TextField-label" for="userName">
               <span class="education-icon">👤</span>
-              Username or Email
+              Username
             </label>
             <input 
               type="text" 
-              id="userNameOrEmail"
-              formControlName="userNameOrEmail" 
+              id="userName"
+              formControlName="userName" 
               class="ms-TextField-field"
-              placeholder="Enter your username or email"
-              [class.error]="registerForm.get('userNameOrEmail')?.invalid && registerForm.get('userNameOrEmail')?.touched"
+              placeholder="Enter your username"
+              [class.error]="registerForm.get('userName')?.invalid && registerForm.get('userName')?.touched"
             >
             <div class="error-message ms-fontSize-12" 
-                 *ngIf="registerForm.get('userNameOrEmail')?.invalid && registerForm.get('userNameOrEmail')?.touched">
+                 *ngIf="registerForm.get('userName')?.invalid && registerForm.get('userName')?.touched">
               <span class="education-icon">⚠️</span>
-              Username or Email is required
+              Username is required (min 3 characters)
+            </div>
+          </div>
+
+          <div class="ms-TextField">
+            <label class="ms-TextField-label" for="email">
+              <span class="education-icon">📧</span>
+              Email
+            </label>
+            <input 
+              type="email" 
+              id="email"
+              formControlName="email" 
+              class="ms-TextField-field"
+              placeholder="Enter your email"
+              [class.error]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
+            >
+            <div class="error-message ms-fontSize-12" 
+                 *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+              <span class="education-icon">⚠️</span>
+              Valid email is required
+            </div>
+          </div>
+
+          <div class="ms-TextField">
+            <label class="ms-TextField-label" for="role">
+              <span class="education-icon">🎭</span>
+              Role
+            </label>
+            <select 
+              id="role"
+              formControlName="role" 
+              class="ms-TextField-field"
+              [class.error]="registerForm.get('role')?.invalid && registerForm.get('role')?.touched"
+            >
+              <option value="Teacher">Teacher</option>
+              <option value="Admin">Admin</option>
+            </select>
+            <div class="error-message ms-fontSize-12" 
+                 *ngIf="registerForm.get('role')?.invalid && registerForm.get('role')?.touched">
+              <span class="education-icon">⚠️</span>
+              Role is required
             </div>
           </div>
 
@@ -252,9 +293,11 @@ export class RegisterComponent {
     private router: Router
   ) {
     this.registerForm = this.fb.group({
-      userNameOrEmail: ['', [Validators.required]],
+      userName: ['', [Validators.required, Validators.minLength(3)]],
+      email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.required]]
+      confirmPassword: ['', [Validators.required]],
+      role: ['Teacher', [Validators.required]]
     }, { validators: this.passwordMatchValidator });
   }
 
@@ -276,15 +319,19 @@ export class RegisterComponent {
       this.errorMessage = '';
       this.successMessage = '';
 
-      const { userNameOrEmail, password } = this.registerForm.value;
+      const { userName, email, password, role } = this.registerForm.value;
 
-      this.authService.register({ userNameOrEmail, password }).subscribe({
+      this.authService.register({ userName, email, password, role }).subscribe({
         next: (response) => {
           this.isLoading = false;
-          this.successMessage = 'Registration successful! Redirecting to login...';
+          if (role === 'Teacher') {
+            this.successMessage = 'Registration successful! Your account is pending admin approval. You will be notified once approved.';
+          } else {
+            this.successMessage = 'Registration successful! Redirecting to login...';
+          }
           setTimeout(() => {
             this.router.navigate(['/login']);
-          }, 2000);
+          }, 3000);
         },
         error: (error) => {
           this.isLoading = false;

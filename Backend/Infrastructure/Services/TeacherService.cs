@@ -40,8 +40,7 @@ public class TeacherService : ITeacherService
             Qualification = dto.Qualification,
             ContactNumber = dto.ContactNumber,
             Email = dto.Email,
-            DateOfJoining = dto.DateOfJoining,
-            Salary = dto.Salary
+            DateOfJoining = dto.DateOfJoining
         };
 
         var createdTeacher = await _teacherRepository.AddAsync(teacher);
@@ -67,7 +66,6 @@ public class TeacherService : ITeacherService
         existingTeacher.ContactNumber = dto.ContactNumber;
         existingTeacher.Email = dto.Email;
         existingTeacher.DateOfJoining = dto.DateOfJoining;
-        existingTeacher.Salary = dto.Salary;
         existingTeacher.IsActive = dto.IsActive;
 
         var updatedTeacher = await _teacherRepository.UpdateAsync(existingTeacher);
@@ -108,7 +106,51 @@ public class TeacherService : ITeacherService
             ContactNumber = teacher.ContactNumber,
             Email = teacher.Email,
             DateOfJoining = teacher.DateOfJoining,
-            Salary = teacher.Salary,
+            IsActive = teacher.IsActive
+        };
+    }
+
+    public async Task<PagedResult<TeacherReportDto>> GetTeacherReportAsync(TeacherReportSearchRequest request)
+    {
+        var (teachers, totalCount) = await _teacherRepository.GetTeachersForReportAsync(
+            request.SearchTerm,
+            request.TeacherName,
+            request.SchoolName,
+            request.District,
+            request.Pincode,
+            request.ContactNumber,
+            request.Page,
+            request.PageSize,
+            request.SortBy ?? "TeacherName",
+            request.SortDirection ?? "asc"
+        );
+
+        var reportDtos = teachers.Select(MapToReportDto).ToList();
+
+        return new PagedResult<TeacherReportDto>
+        {
+            Items = reportDtos,
+            TotalCount = totalCount,
+            Page = request.Page,
+            PageSize = request.PageSize
+        };
+    }
+
+    private static TeacherReportDto MapToReportDto(Teacher teacher)
+    {
+        return new TeacherReportDto
+        {
+            Id = teacher.Id,
+            TeacherName = teacher.TeacherName,
+            SchoolName = teacher.School?.SchoolName ?? "",
+            District = teacher.District,
+            Pincode = teacher.Pincode,
+            ContactNumber = teacher.ContactNumber,
+            Email = teacher.Email,
+            Address = teacher.Address,
+            ClassTeaching = teacher.ClassTeaching,
+            Subject = teacher.Subject,
+            DateOfJoining = teacher.DateOfJoining,
             IsActive = teacher.IsActive
         };
     }

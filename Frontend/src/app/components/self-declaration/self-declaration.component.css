@@ -1,0 +1,139 @@
+.self-declaration-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-xxl);
+}
+
+.header-section {
+  text-align: center;
+  margin-bottom: var(--spacing-xxl);
+  color: var(--primary-color);
+}
+
+.education-icon {
+  font-size: var(--font-size-24);
+  margin-right: var(--spacing-xs);
+}
+
+.form-card {
+  padding: var(--spacing-xxxl);
+  background: var(--neutral-white);
+  border-radius: var(--border-radius-large);
+  box-shadow: var(--shadow-16);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-l);
+  margin-bottom: var(--spacing-xl);
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.ms-TextField {
+  display: flex;
+  flex-direction: column;
+}
+
+.ms-TextField-label {
+  font-weight: 600;
+  margin-bottom: var(--spacing-xs);
+  color: var(--neutral-gray-130);
+  display: flex;
+  align-items: center;
+}
+
+.ms-TextField-field {
+  padding: var(--spacing-m);
+  border: 1px solid var(--neutral-gray-60);
+  border-radius: var(--border-radius-medium);
+  font-size: var(--font-size-14);
+  transition: all 0.2s ease;
+}
+
+.ms-TextField-field:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 1px var(--primary-color);
+}
+
+.ms-TextField-field.error {
+  border-color: var(--error-color);
+  box-shadow: 0 0 0 1px var(--error-color);
+}
+
+.error-message {
+  color: var(--error-color);
+  font-size: var(--font-size-12);
+  margin-top: var(--spacing-xs);
+}
+
+.success-message {
+  color: var(--success-color);
+  font-size: var(--font-size-14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-m);
+  margin-top: var(--spacing-xl);
+}
+
+.ms-Button {
+  padding: var(--spacing-m) var(--spacing-xxl);
+  font-size: var(--font-size-16);
+  font-weight: 600;
+  border: none;
+  border-radius: var(--border-radius-medium);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.ms-Button--knowledge {
+  background: var(--gradient-knowledge);
+  color: white;
+}
+
+.ms-Button--knowledge:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-8);
+}
+
+.ms-Button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .self-declaration-container {
+    padding: var(--spacing-l);
+  }
+  
+  .form-card {
+    padding: var(--spacing-xl);
+  }
+}

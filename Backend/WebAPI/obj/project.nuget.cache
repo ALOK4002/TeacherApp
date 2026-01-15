@@ -1,11 +1,14 @@
 {
   "version": 2,
-  "dgSpecHash": "/gZUim0BoGI=",
+  "dgSpecHash": "q2a9mG4sKMU=",
   "success": true,
   "projectFilePath": "/Users/alokbabu/TeacherVS_2/Backend/WebAPI/WebAPI.csproj",
   "expectedPackageFiles": [
+    "/Users/alokbabu/.nuget/packages/azure.communication.email/1.0.1/azure.communication.email.1.0.1.nupkg.sha512",
     "/Users/alokbabu/.nuget/packages/azure.core/1.49.0/azure.core.1.49.0.nupkg.sha512",
     "/Users/alokbabu/.nuget/packages/azure.search.documents/11.7.0/azure.search.documents.11.7.0.nupkg.sha512",
+    "/Users/alokbabu/.nuget/packages/azure.storage.blobs/12.19.1/azure.storage.blobs.12.19.1.nupkg.sha512",
+    "/Users/alokbabu/.nuget/packages/azure.storage.common/12.18.1/azure.storage.common.12.18.1.nupkg.sha512",
     "/Users/alokbabu/.nuget/packages/fluentvalidation/12.1.1/fluentvalidation.12.1.1.nupkg.sha512",
     "/Users/alokbabu/.nuget/packages/humanizer.core/2.14.1/humanizer.core.2.14.1.nupkg.sha512",
     "/Users/alokbabu/.nuget/packages/microsoft.aspnetcore.authentication.jwtbearer/10.0.1/microsoft.aspnetcore.authentication.jwtbearer.10.0.1.nupkg.sha512",
@@ -60,6 +63,7 @@
     "/Users/alokbabu/.nuget/packages/system.configuration.configurationmanager/9.0.0/system.configuration.configurationmanager.9.0.0.nupkg.sha512",
     "/Users/alokbabu/.nuget/packages/system.formats.nrbf/9.0.0/system.formats.nrbf.9.0.0.nupkg.sha512",
     "/Users/alokbabu/.nuget/packages/system.identitymodel.tokens.jwt/8.15.0/system.identitymodel.tokens.jwt.8.15.0.nupkg.sha512",
+    "/Users/alokbabu/.nuget/packages/system.io.hashing/6.0.0/system.io.hashing.6.0.0.nupkg.sha512",
     "/Users/alokbabu/.nuget/packages/system.memory.data/8.0.1/system.memory.data.8.0.1.nupkg.sha512",
     "/Users/alokbabu/.nuget/packages/system.reflection.metadataloadcontext/7.0.0/system.reflection.metadataloadcontext.7.0.0.nupkg.sha512",
     "/Users/alokbabu/.nuget/packages/system.resources.extensions/9.0.0/system.resources.extensions.9.0.0.nupkg.sha512",

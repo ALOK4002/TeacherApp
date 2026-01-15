@@ -20,9 +20,39 @@ public class UserRepository : IUserRepository
             .FirstOrDefaultAsync(u => u.UserName == value || u.Email == value);
     }
 
+    public async Task<User?> GetByIdAsync(int id)
+    {
+        return await _context.Users.FindAsync(id);
+    }
+
     public async Task AddAsync(User user)
     {
+        user.CreatedDate = DateTime.UtcNow;
+        user.UpdatedDate = DateTime.UtcNow;
         await _context.Users.AddAsync(user);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<User> UpdateAsync(User user)
+    {
+        user.UpdatedDate = DateTime.UtcNow;
+        _context.Users.Update(user);
+        await _context.SaveChangesAsync();
+        return user;
+    }
+
+    public async Task<List<User>> GetPendingUsersAsync()
+    {
+        return await _context.Users
+            .Where(u => !u.IsApproved && u.IsActive)
+            .OrderBy(u => u.CreatedDate)
+            .ToListAsync();
+    }
+
+    public async Task<List<User>> GetAllUsersAsync()
+    {
+        return await _context.Users
+            .OrderByDescending(u => u.CreatedDate)
+            .ToListAsync();
     }
 }

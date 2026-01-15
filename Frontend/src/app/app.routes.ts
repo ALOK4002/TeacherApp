@@ -7,16 +7,37 @@ import { TeacherManagementComponent } from './components/teacher-management/teac
 import { NoticeBoardComponent } from './components/notice-board/notice-board.component';
 import { AboutUsComponent } from './components/about-us/about-us.component';
 import { SearchComponent } from './components/search/search.component';
+import { TeacherReportComponent } from './components/teacher-report/teacher-report.component';
+import { TeacherDocumentsComponent } from './components/teacher-documents/teacher-documents.component';
+import { SelfDeclarationComponent } from './components/self-declaration/self-declaration.component';
+import { MyDocumentsComponent } from './components/my-documents/my-documents.component';
+import { UserDashboardComponent } from './components/user-dashboard/user-dashboard.component';
+import { UserOnboardingComponent } from './components/user-onboarding/user-onboarding.component';
+import { authGuard } from './guards/auth.guard';
+import { adminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/register', pathMatch: 'full' },
   { path: 'register', component: RegisterComponent },
   { path: 'login', component: LoginComponent },
   { path: 'welcome', component: WelcomeComponent },
-  { path: 'schools', component: SchoolManagementComponent },
-  { path: 'teachers', component: TeacherManagementComponent },
+  
+  // User Routes (Protected)
+  { path: 'self-declaration', component: SelfDeclarationComponent, canActivate: [authGuard] },
+  { path: 'my-documents', component: MyDocumentsComponent, canActivate: [authGuard] },
+  { path: 'user-dashboard', component: UserDashboardComponent, canActivate: [authGuard] },
+  
+  // Admin Routes (Protected)
+  { path: 'user-onboarding', component: UserOnboardingComponent, canActivate: [authGuard, adminGuard] },
+  { path: 'schools', component: SchoolManagementComponent, canActivate: [authGuard, adminGuard] },
+  { path: 'teachers', component: TeacherManagementComponent, canActivate: [authGuard, adminGuard] },
+  { path: 'teacher-report', component: TeacherReportComponent, canActivate: [authGuard, adminGuard] },
+  { path: 'teacher-documents/:id', component: TeacherDocumentsComponent, canActivate: [authGuard, adminGuard] },
+  
+  // Public Routes
   { path: 'notices', component: NoticeBoardComponent },
   { path: 'about', component: AboutUsComponent },
   { path: 'search', component: SearchComponent },
+  
   { path: '**', redirectTo: '/register' }
 ];

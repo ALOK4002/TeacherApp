@@ -1,19 +1,16 @@
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { isPlatformBrowser } from '@angular/common';
 import { Notice, CreateNotice, UpdateNotice, CreateNoticeReply, NoticeWithReplies } from '../models/notice.models';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NoticeService {
-  private apiUrl = 'http://localhost:5162/api/notice';
+  private apiUrl = `${environment.apiUrl}/notice`;
 
-  constructor(
-    private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  constructor(private http: HttpClient) {}
 
   getAllNotices(): Observable<Notice[]> {
     return this.http.get<Notice[]>(this.apiUrl);

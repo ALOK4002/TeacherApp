@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
+import { UserProfileService } from '../../services/user-profile.service';
 
 @Component({
   selector: 'app-login',
@@ -212,6 +213,7 @@ export class LoginComponent {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
+    private userProfileService: UserProfileService,
     private router: Router
   ) {
     this.loginForm = this.fb.group({
@@ -225,10 +227,48 @@ export class LoginComponent {
       this.isLoading = true;
       this.errorMessage = '';
 
-      this.authService.login(this.loginForm.value).subscribe({
+      const loginRequest = {
+        userName: this.loginForm.value.userNameOrEmail,
+        password: this.loginForm.value.password
+      };
+
+      this.authService.login(loginRequest).subscribe({
         next: (response) => {
-          this.isLoading = false;
-          this.router.navigate(['/schools']);
+          // Check if user is approved
+          if (!response.isApproved) {
+            this.isLoading = false;
+            this.errorMessage = 'Your account is pending admin approval. Please wait for approval before logging in.';
+            this.authService.logout();
+            return;
+          }
+
+          // Role-based redirect
+          if (this.authService.isAdmin()) {
+            // Admin goes to teacher management
+            this.isLoading = false;
+            this.router.navigate(['/teachers']);
+          } else if (this.authService.isTeacher()) {
+            // Teacher: check if profile exists
+            this.userProfileService.hasProfile().subscribe({
+              next: (hasProfile) => {
+                this.isLoading = false;
+                if (hasProfile) {
+                  this.router.navigate(['/user-dashboard']);
+                } else {
+                  this.router.navigate(['/self-declaration']);
+                }
+              },
+              error: (error) => {
+                this.isLoading = false;
+                // If error checking profile, assume no profile and go to self-declaration
+                this.router.navigate(['/self-declaration']);
+              }
+            });
+          } else {
+            // Default fallback
+            this.isLoading = false;
+            this.router.navigate(['/welcome']);
+          }
         },
         error: (error) => {
           this.isLoading = false;

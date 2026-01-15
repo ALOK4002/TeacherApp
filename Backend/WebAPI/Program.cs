@@ -13,7 +13,12 @@ using Microsoft.Extensions.FileProviders;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    });
 
 // Database
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -21,17 +26,23 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserProfileRepository, UserProfileRepository>();
 builder.Services.AddScoped<ISchoolRepository, SchoolRepository>();
 builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
 builder.Services.AddScoped<INoticeRepository, NoticeRepository>();
+builder.Services.AddScoped<ITeacherDocumentRepository, TeacherDocumentRepository>();
 
 // Services
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserProfileService, UserProfileService>();
 builder.Services.AddScoped<ISchoolService, SchoolService>();
 builder.Services.AddScoped<ITeacherService, TeacherService>();
 builder.Services.AddScoped<IUtilityService, UtilityService>();
 builder.Services.AddScoped<INoticeService, NoticeService>();
 builder.Services.AddScoped<ISearchService, SearchService>();
+builder.Services.AddScoped<ITeacherDocumentService, TeacherDocumentService>();
+builder.Services.AddScoped<IDocumentStorageService, DocumentStorageService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<PasswordService>();
 
 // JWT Service
@@ -115,5 +126,41 @@ app.MapControllers();
 
 // Fallback to index.html for Angular routing
 app.MapFallbackToFile("browser/index.html");
+
+// Seed default admin user
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var passwordService = scope.ServiceProvider.GetRequiredService<PasswordService>();
+    
+    // Check if admin user exists
+    var adminUser = context.Users.FirstOrDefault(u => u.UserName == "admin");
+    if (adminUser == null)
+    {
+        // Create default admin user
+        var admin = new Domain.Entities.User
+        {
+            UserName = "admin",
+            Email = "admin@teacherportal.com",
+            PasswordHash = passwordService.HashPassword("admin"),
+            Role = "Admin",
+            IsApproved = true,
+            IsActive = true,
+            CreatedDate = DateTime.UtcNow,
+            UpdatedDate = DateTime.UtcNow
+        };
+        context.Users.Add(admin);
+        context.SaveChanges();
+    }
+    else
+    {
+        // Update existing user to have admin role and approval
+        adminUser.Role = "Admin";
+        adminUser.IsApproved = true;
+        adminUser.IsActive = true;
+        adminUser.UpdatedDate = DateTime.UtcNow;
+        context.SaveChanges();
+    }
+}
 
 app.Run();

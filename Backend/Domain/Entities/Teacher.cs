@@ -14,11 +14,11 @@ public class Teacher
     public string ContactNumber { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public DateTime DateOfJoining { get; set; }
-    public decimal Salary { get; set; }
     public bool IsActive { get; set; } = true;
     public DateTime CreatedDate { get; set; }
     public DateTime UpdatedDate { get; set; }
 
     // Navigation property
     public School? School { get; set; }
+    public ICollection<TeacherDocument> Documents { get; set; } = new List<TeacherDocument>();
 }

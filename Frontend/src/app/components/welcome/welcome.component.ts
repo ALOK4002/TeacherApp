@@ -15,11 +15,15 @@ import { AuthService } from '../../services/auth.service';
           Welcome, <strong>{{ userName }}</strong>! You have successfully logged in.
         </p>
         <div class="action-buttons">
-          <a routerLink="/schools" class="btn-primary">Manage Schools</a>
-          <a routerLink="/teachers" class="btn-primary">Manage Teachers</a>
-          <a routerLink="/notices" class="btn-primary">Notice Board</a>
-          <a routerLink="/about" class="btn-primary">About Us</a>
-          <button (click)="logout()" class="btn-logout">Logout</button>
+          <a routerLink="/user-onboarding" class="btn-primary" *ngIf="isAdmin">👥 User Onboarding</a>
+          <a routerLink="/schools" class="btn-primary" *ngIf="isAdmin">🏫 Manage Schools</a>
+          <a routerLink="/teachers" class="btn-primary" *ngIf="isAdmin">👨‍🏫 Manage Teachers</a>
+          <a routerLink="/teacher-report" class="btn-primary" *ngIf="isAdmin">📊 Teacher Report</a>
+          <a routerLink="/user-dashboard" class="btn-primary" *ngIf="!isAdmin">🏠 My Dashboard</a>
+          <a routerLink="/my-documents" class="btn-primary" *ngIf="!isAdmin">📄 My Documents</a>
+          <a routerLink="/notices" class="btn-primary">📢 Notice Board</a>
+          <a routerLink="/about" class="btn-primary">ℹ️ About Us</a>
+          <button (click)="logout()" class="btn-logout">🚪 Logout</button>
         </div>
       </div>
     </div>
@@ -96,6 +100,7 @@ import { AuthService } from '../../services/auth.service';
 })
 export class WelcomeComponent implements OnInit {
   userName: string = '';
+  isAdmin: boolean = false;
 
   constructor(
     private authService: AuthService,
@@ -109,6 +114,7 @@ export class WelcomeComponent implements OnInit {
     }
 
     this.userName = this.authService.getUserName() || 'User';
+    this.isAdmin = this.authService.isAdmin();
   }
 
   logout() {

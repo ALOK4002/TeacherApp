@@ -11,4 +11,15 @@ public interface ITeacherRepository
     Task<bool> DeleteAsync(int id);
     Task<IEnumerable<Teacher>> GetByDistrictAsync(string district);
     Task<IEnumerable<Teacher>> GetBySchoolIdAsync(int schoolId);
+    Task<(IEnumerable<Teacher> Teachers, int TotalCount)> GetTeachersForReportAsync(
+        string? searchTerm, 
+        string? teacherName, 
+        string? schoolName, 
+        string? district, 
+        string? pincode, 
+        string? contactNumber,
+        int page, 
+        int pageSize, 
+        string sortBy, 
+        string sortDirection);
 }

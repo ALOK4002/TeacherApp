@@ -1,19 +1,16 @@
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { isPlatformBrowser } from '@angular/common';
 import { School, CreateSchool, UpdateSchool } from '../models/school.models';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SchoolService {
-  private apiUrl = 'http://localhost:5162/api/school';
+  private apiUrl = `${environment.apiUrl}/school`;
 
-  constructor(
-    private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {}
+  constructor(private http: HttpClient) {}
 
   getAllSchools(): Observable<School[]> {
     return this.http.get<School[]>(this.apiUrl);

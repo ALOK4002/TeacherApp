@@ -72,9 +72,5 @@ public class UpdateTeacherValidator : AbstractValidator<UpdateTeacherDto>
         RuleFor(x => x.DateOfJoining)
             .LessThanOrEqualTo(DateTime.Now)
             .WithMessage("Date of joining cannot be in the future");
-
-        RuleFor(x => x.Salary)
-            .GreaterThan(0)
-            .WithMessage("Salary must be greater than 0");
     }
 }

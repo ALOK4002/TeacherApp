@@ -1,0 +1,214 @@
+<div class="my-documents-container">
+  <div class="header-section">
+    <h1 class="ms-fontSize-32 ms-fontWeight-bold">
+      <span class="education-icon">📄</span>
+      My Documents
+    </h1>
+    <button class="ms-Button ms-Button--secondary" (click)="goToDashboard()">
+      <span class="education-icon">🏠</span>
+      Back to Dashboard
+    </button>
+  </div>
+
+  <!-- Upload Section -->
+  <div class="upload-card ms-Card ms-Card--elevated">
+    <h2 class="ms-fontSize-20 ms-fontWeight-semibold" style="margin-bottom: 20px;">
+      <span class="education-icon">📤</span>
+      Upload New Document
+    </h2>
+
+    <form [formGroup]="uploadForm" (ngSubmit)="onUpload()">
+      <div class="upload-grid">
+        <div class="ms-TextField">
+          <label class="ms-TextField-label">Document Type *</label>
+          <select formControlName="documentType" class="ms-TextField-field">
+            <option value="">Select Type</option>
+            <option *ngFor="let type of documentTypes" [value]="type.value">
+              {{ type.label }}
+            </option>
+          </select>
+        </div>
+
+        <div class="ms-TextField" *ngIf="uploadForm.get('documentType')?.value === 'Other'">
+          <label class="ms-TextField-label">Custom Document Type</label>
+          <input 
+            type="text" 
+            formControlName="customDocumentType" 
+            class="ms-TextField-field"
+            placeholder="Specify document type"
+          >
+        </div>
+
+        <div class="ms-TextField full-width">
+          <label class="ms-TextField-label">Remarks</label>
+          <textarea 
+            formControlName="remarks" 
+            class="ms-TextField-field"
+            rows="2"
+            placeholder="Add any remarks (optional)"
+          ></textarea>
+        </div>
+
+        <div class="ms-TextField full-width">
+          <label class="ms-TextField-label">Select File *</label>
+          <input 
+            type="file" 
+            (change)="onFileSelected($event)"
+            class="file-input"
+            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+          >
+          <small class="file-hint">Accepted formats: PDF, DOC, DOCX, JPG, PNG (Max 10MB)</small>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button 
+          type="submit" 
+          class="ms-Button ms-Button--knowledge"
+          [disabled]="uploadForm.invalid || isUploading"
+        >
+          <span class="education-icon" *ngIf="!isUploading">📤</span>
+          <span class="loading-spinner" *ngIf="isUploading">⏳</span>
+          {{ isUploading ? 'Uploading...' : 'Upload Document' }}
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Messages -->
+  <div class="message-container">
+    <div class="success-message" *ngIf="successMessage">
+      <span class="education-icon">✅</span>
+      {{ successMessage }}
+    </div>
+    <div class="error-message" *ngIf="errorMessage">
+      <span class="education-icon">❌</span>
+      {{ errorMessage }}
+    </div>
+  </div>
+
+  <!-- Documents List -->
+  <div class="documents-section">
+    <h2 class="ms-fontSize-24 ms-fontWeight-semibold" style="margin-bottom: 20px;">
+      <span class="education-icon">📚</span>
+      My Uploaded Documents ({{ documents.length }})
+    </h2>
+
+    <div class="loading-message" *ngIf="isLoading">
+      <span class="loading-spinner">⏳</span>
+      Loading documents...
+    </div>
+
+    <div class="no-documents" *ngIf="!isLoading && documents.length === 0">
+      <span class="education-icon" style="font-size: 48px;">📭</span>
+      <p>No documents uploaded yet</p>
+      <small>Upload your first document using the form above</small>
+    </div>
+
+    <div class="documents-grid" *ngIf="!isLoading && documents.length > 0">
+      <div class="document-card ms-Card" *ngFor="let doc of documents">
+        <div class="document-header">
+          <div class="document-type-badge" [class]="'badge-' + doc.documentType.toLowerCase()">
+            {{ doc.documentType }}
+          </div>
+          <div class="document-date">
+            {{ doc.uploadedDate | date: 'MMM d, yyyy' }}
+          </div>
+        </div>
+
+        <div class="document-body">
+          <h3 class="document-title">{{ doc.originalFileName }}</h3>
+          <div class="document-info">
+            <span class="info-item">
+              <span class="education-icon">📦</span>
+              {{ doc.fileSizeFormatted }}
+            </span>
+            <span class="info-item">
+              <span class="education-icon">📄</span>
+              {{ doc.contentType }}
+            </span>
+          </div>
+          <p class="document-remarks" *ngIf="doc.remarks">
+            <strong>Remarks:</strong> {{ doc.remarks }}
+          </p>
+        </div>
+
+        <div class="document-actions">
+          <button class="action-btn view-btn" (click)="viewDocument(doc)" title="View">
+            <span class="education-icon">👁️</span>
+            View
+          </button>
+          <button class="action-btn download-btn" (click)="downloadDocument(doc)" title="Download">
+            <span class="education-icon">⬇️</span>
+            Download
+          </button>
+          <button class="action-btn email-btn" (click)="openEmailDialog(doc.id)" title="Email">
+            <span class="education-icon">📧</span>
+            Email
+          </button>
+          <button class="action-btn delete-btn" (click)="deleteDocument(doc.id)" title="Delete">
+            <span class="education-icon">🗑️</span>
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Email Dialog -->
+  <div class="modal-overlay" *ngIf="showEmailDialog" (click)="closeEmailDialog()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="ms-fontSize-20">
+          <span class="education-icon">📧</span>
+          Send Document via Email
+        </h2>
+        <button class="close-btn" (click)="closeEmailDialog()">✕</button>
+      </div>
+
+      <form [formGroup]="emailForm" (ngSubmit)="sendEmail()">
+        <div class="modal-body">
+          <div class="ms-TextField">
+            <label class="ms-TextField-label">Recipient Email *</label>
+            <input 
+              type="email" 
+              formControlName="recipientEmail" 
+              class="ms-TextField-field"
+              placeholder="Enter email address"
+            >
+          </div>
+
+          <div class="ms-TextField">
+            <label class="ms-TextField-label">Recipient Name *</label>
+            <input 
+              type="text" 
+              formControlName="recipientName" 
+              class="ms-TextField-field"
+              placeholder="Enter recipient name"
+            >
+          </div>
+
+          <div class="ms-TextField">
+            <label class="ms-TextField-label">Message (Optional)</label>
+            <textarea 
+              formControlName="message" 
+              class="ms-TextField-field"
+              rows="3"
+              placeholder="Add a personal message"
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="ms-Button ms-Button--secondary" (click)="closeEmailDialog()">
+            Cancel
+          </button>
+          <button type="submit" class="ms-Button ms-Button--knowledge" [disabled]="emailForm.invalid">
+            <span class="education-icon">📧</span>
+            Send Email
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -3,6 +3,16 @@
 
 This guide shows you how to manually deploy the application using Azure Portal without any command-line tools.
 
+## ⚠️ IMPORTANT: Environment Configuration Fixed
+
+**The application has been updated to fix API URL issues after deployment!**
+
+- ✅ All services now use environment-based configuration
+- ✅ Production build uses relative URLs (`/api`) instead of `localhost:5162`
+- ✅ No additional Azure configuration needed for API communication
+
+**See**: `AZURE_ENVIRONMENT_CONFIGURATION.md` for detailed technical information.
+
 ## 🔧 Part 1: Configure Angular Build (Already Done)
 
 The Angular configuration has been updated to build directly to the backend's wwwroot folder:

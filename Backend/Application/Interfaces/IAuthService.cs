@@ -4,6 +4,10 @@ namespace Application.Interfaces;
 
 public interface IAuthService
 {
-    Task RegisterAsync(RegisterRequestDto dto);
-    Task<AuthResponseDto> LoginAsync(LoginRequestDto dto);
+    Task RegisterAsync(RegisterDto dto);
+    Task<AuthResponseDto> LoginAsync(LoginDto dto);
+    Task<PendingUsersResponse> GetPendingUsersAsync();
+    Task<List<UserDto>> GetAllUsersAsync();
+    Task ApproveUserAsync(int userId, int approvedByUserId);
+    Task RejectUserAsync(int userId, string rejectionReason, int rejectedByUserId);
 }

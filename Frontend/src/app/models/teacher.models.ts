@@ -12,8 +12,8 @@ export interface Teacher {
   contactNumber: string;
   email: string;
   dateOfJoining: string;
-  salary: number;
   isActive: boolean;
+  documentCount?: number;
 }
 
 export interface CreateTeacher {
@@ -28,7 +28,6 @@ export interface CreateTeacher {
   contactNumber: string;
   email: string;
   dateOfJoining: string;
-  salary: number;
 }
 
 export interface UpdateTeacher {
@@ -44,7 +43,6 @@ export interface UpdateTeacher {
   contactNumber: string;
   email: string;
   dateOfJoining: string;
-  salary: number;
   isActive: boolean;
 }
 
@@ -56,4 +54,41 @@ export interface District {
 export interface Pincode {
   pincode: string;
   district: string;
+}
+export interface TeacherReport {
+  id: number;
+  teacherName: string;
+  schoolName: string;
+  district: string;
+  pincode: string;
+  contactNumber: string;
+  email: string;
+  address: string;
+  classTeaching: string;
+  subject: string;
+  dateOfJoining: string;
+  isActive: boolean;
+}
+
+export interface TeacherReportSearchRequest {
+  searchTerm?: string;
+  teacherName?: string;
+  schoolName?: string;
+  district?: string;
+  pincode?: string;
+  contactNumber?: string;
+  page: number;
+  pageSize: number;
+  sortBy?: string;
+  sortDirection?: string;
+}
+
+export interface PagedResult<T> {
+  items: T[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
 }
