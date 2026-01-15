@@ -244,9 +244,9 @@ export class LoginComponent {
 
           // Role-based redirect
           if (this.authService.isAdmin()) {
-            // Admin goes to teacher management
+            // Admin goes to user onboarding (approval page)
             this.isLoading = false;
-            this.router.navigate(['/teachers']);
+            this.router.navigate(['/user-onboarding']);
           } else if (this.authService.isTeacher()) {
             // Teacher: check if profile exists
             this.userProfileService.hasProfile().subscribe({

@@ -6,6 +6,24 @@ using System.Security.Claims;
 
 namespace WebAPI.Controllers;
 
+// DTOs for file upload
+public class UploadDocumentRequest
+{
+    public int TeacherId { get; set; }
+    public IFormFile File { get; set; } = null!;
+    public string DocumentType { get; set; } = string.Empty;
+    public string? CustomDocumentType { get; set; }
+    public string? Remarks { get; set; }
+}
+
+public class UploadMyDocumentRequest
+{
+    public IFormFile File { get; set; } = null!;
+    public string DocumentType { get; set; } = string.Empty;
+    public string? CustomDocumentType { get; set; }
+    public string? Remarks { get; set; }
+}
+
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
@@ -23,16 +41,12 @@ public class TeacherDocumentController : ControllerBase
     }
 
     [HttpPost("upload")]
-    public async Task<IActionResult> UploadDocument(
-        [FromForm] int teacherId,
-        [FromForm] IFormFile file,
-        [FromForm] string documentType,
-        [FromForm] string? customDocumentType,
-        [FromForm] string? remarks)
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> UploadDocument([FromForm] UploadDocumentRequest request)
     {
         try
         {
-            if (file == null || file.Length == 0)
+            if (request.File == null || request.File.Length == 0)
             {
                 return BadRequest(new { message = "No file uploaded" });
             }
@@ -45,11 +59,11 @@ public class TeacherDocumentController : ControllerBase
             }
 
             var document = await _documentService.UploadDocumentAsync(
-                teacherId,
-                file,
-                documentType,
-                customDocumentType ?? string.Empty,
-                remarks ?? string.Empty,
+                request.TeacherId,
+                request.File,
+                request.DocumentType,
+                request.CustomDocumentType ?? string.Empty,
+                request.Remarks ?? string.Empty,
                 userId);
 
             return Ok(document);
@@ -150,15 +164,12 @@ public class TeacherDocumentController : ControllerBase
 
     // User document endpoints
     [HttpPost("upload-my-document")]
-    public async Task<IActionResult> UploadMyDocument(
-        [FromForm] IFormFile file,
-        [FromForm] string documentType,
-        [FromForm] string? customDocumentType,
-        [FromForm] string? remarks)
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> UploadMyDocument([FromForm] UploadMyDocumentRequest request)
     {
         try
         {
-            if (file == null || file.Length == 0)
+            if (request.File == null || request.File.Length == 0)
             {
                 return BadRequest(new { message = "No file uploaded" });
             }
@@ -167,10 +178,10 @@ public class TeacherDocumentController : ControllerBase
 
             var document = await _documentService.UploadUserDocumentAsync(
                 userId,
-                file,
-                documentType,
-                customDocumentType ?? string.Empty,
-                remarks ?? string.Empty);
+                request.File,
+                request.DocumentType,
+                request.CustomDocumentType ?? string.Empty,
+                request.Remarks ?? string.Empty);
 
             return Ok(document);
         }

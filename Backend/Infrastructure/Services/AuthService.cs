@@ -55,17 +55,12 @@ public class AuthService : IAuthService
             throw new UnauthorizedAccessException("Invalid credentials");
         }
 
-        // Check if user is approved (except for admin)
-        if (user.Role != "Admin" && !user.IsApproved)
-        {
-            throw new UnauthorizedAccessException("Your account is pending approval. Please wait for admin approval.");
-        }
-
         if (!user.IsActive)
         {
             throw new UnauthorizedAccessException("Your account has been deactivated.");
         }
 
+        // Generate token even for unapproved users so frontend can show proper message
         var token = _jwtService.GenerateToken(user.UserName, user.Id, user.Role);
 
         return new AuthResponseDto

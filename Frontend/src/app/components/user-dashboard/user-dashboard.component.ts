@@ -6,6 +6,8 @@ import { UserProfileService } from '../../services/user-profile.service';
 import { DocumentService } from '../../services/document.service';
 import { UserProfile } from '../../models/user-profile.models';
 import { TeacherDocument } from '../../models/document.models';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-user-dashboard',
@@ -31,19 +33,47 @@ export class UserDashboardComponent implements OnInit {
   ngOnInit() {
     this.userName = this.authService.getUserName() || 'User';
     this.userEmail = this.authService.getUserEmail() || '';
-    this.loadProfile();
-    this.loadDocuments();
+    this.loadData();
+  }
+
+  loadData() {
+    this.isLoading = true;
+    
+    // Load both profile and documents in parallel
+    forkJoin({
+      profile: this.userProfileService.getMyProfile().pipe(
+        catchError(error => {
+          console.error('Error loading profile:', error);
+          return of(null);
+        })
+      ),
+      documents: this.documentService.getMyDocuments().pipe(
+        catchError(error => {
+          console.error('Error loading documents:', error);
+          return of([]);
+        })
+      )
+    }).subscribe({
+      next: (result) => {
+        this.userProfile = result.profile;
+        this.documents = result.documents || [];
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading data:', error);
+        this.isLoading = false;
+      }
+    });
   }
 
   loadProfile() {
     this.userProfileService.getMyProfile().subscribe({
       next: (profile) => {
         this.userProfile = profile;
-        this.isLoading = false;
       },
       error: (error) => {
         console.error('Error loading profile:', error);
-        this.isLoading = false;
+        this.userProfile = null;
       }
     });
   }

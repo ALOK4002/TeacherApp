@@ -17,7 +17,15 @@ export class UserProfileService {
   }
 
   hasProfile(): Observable<boolean> {
-    return this.http.get<boolean>(`${this.apiUrl}/has-profile`);
+    return new Observable<boolean>(observer => {
+      this.http.get<{ hasProfile: boolean }>(`${this.apiUrl}/has-profile`).subscribe({
+        next: (response) => {
+          observer.next(response.hasProfile);
+          observer.complete();
+        },
+        error: (err) => observer.error(err)
+      });
+    });
   }
 
   createProfile(profile: CreateUserProfile): Observable<UserProfile> {
