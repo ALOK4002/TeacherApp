@@ -86,6 +86,10 @@ export class UserDashboardComponent implements OnInit {
     this.router.navigate(['/my-activity']);
   }
 
+  navigateToPolls() {
+    this.router.navigate(['/polls']);
+  }
+
   logout() {
     this.authService.logout();
     this.router.navigate(['/login']);

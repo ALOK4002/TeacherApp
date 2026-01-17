@@ -25,6 +25,8 @@ export class SelfDeclarationComponent implements OnInit {
   errorMessage = '';
   successMessage = '';
   userEmail = '';
+  profileId: number | null = null;
+  isEditMode = false;
 
   constructor(
     private fb: FormBuilder,
@@ -54,6 +56,46 @@ export class SelfDeclarationComponent implements OnInit {
     this.profileForm.patchValue({ email: this.userEmail });
     this.loadDistricts();
     this.loadSchools();
+    this.loadMyProfile();
+  }
+
+  private loadMyProfile() {
+    this.userProfileService.getMyProfile().subscribe({
+      next: (profile) => {
+        this.profileId = profile.id;
+        this.isEditMode = true;
+
+        this.profileForm.patchValue({
+          teacherName: profile.teacherName,
+          address: profile.address,
+          district: profile.district,
+          pincode: profile.pincode,
+          schoolId: profile.schoolId?.toString(),
+          classTeaching: profile.classTeaching,
+          subject: profile.subject,
+          qualification: profile.qualification,
+          contactNumber: profile.contactNumber,
+          email: profile.email,
+          dateOfJoining: this.toDateInputValue(profile.dateOfJoining)
+        });
+
+        this.onDistrictChange();
+      },
+      error: (error) => {
+        if (error?.status !== 404) {
+          console.error('Error loading profile:', error);
+        }
+      }
+    });
+  }
+
+  private toDateInputValue(value: any): string {
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return '';
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
   }
 
   loadDistricts() {
@@ -97,17 +139,21 @@ export class SelfDeclarationComponent implements OnInit {
         schoolId: parseInt(this.profileForm.value.schoolId)
       };
 
-      this.userProfileService.createProfile(profileData).subscribe({
+      const request$ = this.profileId
+        ? this.userProfileService.updateProfile(this.profileId, { id: this.profileId, ...profileData })
+        : this.userProfileService.createProfile(profileData);
+
+      request$.subscribe({
         next: (response) => {
           this.isLoading = false;
-          this.successMessage = 'Profile created successfully! Redirecting to dashboard...';
+          this.successMessage = this.profileId ? 'Profile updated successfully! Redirecting to dashboard...' : 'Profile created successfully! Redirecting to dashboard...';
           setTimeout(() => {
             this.router.navigate(['/user-dashboard']);
           }, 2000);
         },
         error: (error) => {
           this.isLoading = false;
-          this.errorMessage = error.error?.message || 'Failed to create profile. Please try again.';
+          this.errorMessage = error.error?.message || 'Failed to save profile. Please try again.';
         }
       });
     } else {

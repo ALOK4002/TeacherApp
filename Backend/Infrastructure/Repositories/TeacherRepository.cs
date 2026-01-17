@@ -2,94 +2,125 @@ using Domain.Entities;
 using Domain.Interfaces;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Repositories;
 
 public class TeacherRepository : ITeacherRepository
 {
     private readonly AppDbContext _context;
+    private readonly ILogger<TeacherRepository> _logger;
 
-    public TeacherRepository(AppDbContext context)
+    public TeacherRepository(AppDbContext context, ILogger<TeacherRepository> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     public async Task<IEnumerable<Teacher>> GetAllAsync()
     {
-        return await _context.Teachers
+        _logger.LogInformation("Entering GetAllAsync");
+        var query = _context.Teachers
             .Include(t => t.School)
             .Where(t => t.IsActive)
-            .OrderBy(t => t.TeacherName)
-            .ToListAsync();
+            .OrderBy(t => t.TeacherName);
+        _logger.LogInformation("SQL Query: {Query}", query.ToQueryString());
+        var result = await query.ToListAsync();
+        _logger.LogInformation("Exiting GetAllAsync with count: {Count}", result.Count);
+        return result;
     }
 
     public async Task<Teacher?> GetByIdAsync(int id)
     {
-        return await _context.Teachers
+        _logger.LogInformation("Entering GetByIdAsync with Id: {Id}", id);
+        var query = _context.Teachers
             .Include(t => t.School)
-            .FirstOrDefaultAsync(t => t.Id == id && t.IsActive);
+            .Where(t => t.Id == id && t.IsActive);
+        _logger.LogInformation("SQL Query: {Query}", query.ToQueryString());
+        var result = await query.FirstOrDefaultAsync();
+        _logger.LogInformation("Exiting GetByIdAsync; found: {Found}", result != null);
+        return result;
     }
 
     public async Task<Teacher> AddAsync(Teacher teacher)
     {
+        _logger.LogInformation("Entering AddAsync for Name: {Name}", teacher.TeacherName);
         teacher.CreatedDate = DateTime.UtcNow;
         teacher.UpdatedDate = DateTime.UtcNow;
         teacher.IsActive = true;
 
         await _context.Teachers.AddAsync(teacher);
+        _logger.LogInformation("SQL SaveChanges for AddAsync");
         await _context.SaveChangesAsync();
         
-        // Load the school information
+        // Load school information
         await _context.Entry(teacher)
             .Reference(t => t.School)
             .LoadAsync();
-            
+        _logger.LogInformation("Exiting AddAsync with Id: {Id}", teacher.Id);
         return teacher;
     }
 
     public async Task<Teacher> UpdateAsync(Teacher teacher)
     {
+        _logger.LogInformation("Entering UpdateAsync for Id: {Id}", teacher.Id);
         teacher.UpdatedDate = DateTime.UtcNow;
         
         _context.Teachers.Update(teacher);
+        _logger.LogInformation("SQL SaveChanges for UpdateAsync");
         await _context.SaveChangesAsync();
         
-        // Load the school information
+        // Load school information
         await _context.Entry(teacher)
             .Reference(t => t.School)
             .LoadAsync();
-            
+        _logger.LogInformation("Exiting UpdateAsync for Id: {Id}", teacher.Id);
         return teacher;
     }
 
     public async Task<bool> DeleteAsync(int id)
     {
+        _logger.LogInformation("Entering DeleteAsync for Id: {Id}", id);
         var teacher = await _context.Teachers.FindAsync(id);
-        if (teacher == null) return false;
+        if (teacher == null)
+        {
+            _logger.LogWarning("DeleteAsync: Teacher not found for Id: {Id}", id);
+            return false;
+        }
 
         teacher.IsActive = false;
         teacher.UpdatedDate = DateTime.UtcNow;
         
+        _logger.LogInformation("SQL SaveChanges for DeleteAsync (soft delete) Id: {Id}", id);
         await _context.SaveChangesAsync();
+        _logger.LogInformation("Exiting DeleteAsync successfully for Id: {Id}", id);
         return true;
     }
 
     public async Task<IEnumerable<Teacher>> GetByDistrictAsync(string district)
     {
-        return await _context.Teachers
+        _logger.LogInformation("Entering GetByDistrictAsync for District: {District}", district);
+        var query = _context.Teachers
             .Include(t => t.School)
             .Where(t => t.District.ToLower() == district.ToLower() && t.IsActive)
-            .OrderBy(t => t.TeacherName)
-            .ToListAsync();
+            .OrderBy(t => t.TeacherName);
+        _logger.LogInformation("SQL Query: {Query}", query.ToQueryString());
+        var result = await query.ToListAsync();
+        _logger.LogInformation("Exiting GetByDistrictAsync with count: {Count}", result.Count);
+        return result;
     }
 
     public async Task<IEnumerable<Teacher>> GetBySchoolIdAsync(int schoolId)
     {
-        return await _context.Teachers
+        _logger.LogInformation("Entering GetBySchoolIdAsync for SchoolId: {SchoolId}", schoolId);
+        var query = _context.Teachers
             .Include(t => t.School)
             .Where(t => t.SchoolId == schoolId && t.IsActive)
-            .OrderBy(t => t.TeacherName)
-            .ToListAsync();
+            .OrderBy(t => t.TeacherName);
+        _logger.LogInformation("SQL Query: {Query}", query.ToQueryString());
+        var result = await query.ToListAsync();
+        _logger.LogInformation("Exiting GetBySchoolIdAsync with count: {Count}", result.Count);
+        return result;
     }
 
     public async Task<(IEnumerable<Teacher> Teachers, int TotalCount)> GetTeachersForReportAsync(
@@ -104,6 +135,8 @@ public class TeacherRepository : ITeacherRepository
         string sortBy, 
         string sortDirection)
     {
+        _logger.LogInformation("Entering GetTeachersForReportAsync with filters: SearchTerm={SearchTerm}, TeacherName={TeacherName}, SchoolName={SchoolName}, District={District}, Pincode={Pincode}, ContactNumber={ContactNumber}, Page={Page}, PageSize={PageSize}, SortBy={SortBy}, SortDirection={SortDirection}", 
+            searchTerm, teacherName, schoolName, district, pincode, contactNumber, page, pageSize, sortBy, sortDirection);
         var query = _context.Teachers
             .Include(t => t.School)
             .Where(t => t.IsActive)
@@ -174,6 +207,7 @@ public class TeacherRepository : ITeacherRepository
             .Take(pageSize)
             .ToListAsync();
 
+        _logger.LogInformation("Exiting GetTeachersForReportAsync with TotalCount: {TotalCount}, ReturnedCount: {ReturnedCount}", totalCount, teachers.Count);
         return (teachers, totalCount);
     }
 }

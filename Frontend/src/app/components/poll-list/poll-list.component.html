@@ -1,0 +1,51 @@
+<div class="poll-list-container">
+  <div class="header">
+    <button (click)="goToDashboard()" class="back-btn">← Back to Dashboard</button>
+    <h2>Active Polls & Surveys</h2>
+    <button class="create-btn" routerLink="/polls/create">Create New Poll</button>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Loading polls...</p>
+  </div>
+
+  <div *ngIf="error" class="error">
+    <p>{{ error }}</p>
+    <button (click)="loadPolls()" class="retry-btn">Retry</button>
+  </div>
+
+  <div *ngIf="!loading && !error && polls.length === 0" class="empty-state">
+    <p>No active polls available.</p>
+    <button routerLink="/polls/create" class="create-btn">Create the first poll</button>
+  </div>
+
+  <div *ngIf="!loading && !error && polls.length > 0" class="poll-grid">
+    <div *ngFor="let poll of polls" class="poll-card" [class.expired]="isPollExpired(poll)">
+      <div class="poll-header">
+        <h3>{{ poll.title }}</h3>
+        <span class="poll-type">{{ getPollTypeLabel(poll.type) }}</span>
+      </div>
+      
+      <div class="poll-description" *ngIf="poll.description">
+        <p>{{ poll.description }}</p>
+      </div>
+
+      <div class="poll-meta">
+        <p><strong>Questions:</strong> {{ poll.questions.length }}</p>
+        <p><strong>Created by:</strong> {{ poll.createdByUserName || 'Anonymous' }}</p>
+        <p><strong>Created:</strong> {{ formatDate(poll.createdDate) }}</p>
+        <p *ngIf="poll.endDate"><strong>Ends:</strong> {{ formatDate(poll.endDate) }}</p>
+        <p *ngIf="poll.allowMultipleVotes" class="multiple-votes">
+          <span class="badge">Multiple votes allowed</span>
+        </p>
+      </div>
+
+      <div class="poll-actions">
+        <button [routerLink]="['/polls', poll.id]" class="view-btn">View & Vote</button>
+        <button [routerLink]="['/polls', poll.id, 'results']" class="results-btn">Results</button>
+        <button *ngIf="isPollExpired(poll)" disabled class="expired-btn">Expired</button>
+      </div>
+    </div>
+  </div>
+</div>

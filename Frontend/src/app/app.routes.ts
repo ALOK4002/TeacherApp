@@ -16,6 +16,10 @@ import { PaymentResultComponent } from './components/payment-result/payment-resu
 import { PaymentApprovalComponent } from './components/payment-approval/payment-approval.component';
 import { UserDashboardComponent } from './components/user-dashboard/user-dashboard.component';
 import { UserOnboardingComponent } from './components/user-onboarding/user-onboarding.component';
+import { PollListComponent } from './components/poll-list/poll-list.component';
+import { PollCreateComponent } from './components/poll-create/poll-create.component';
+import { PollVoteComponent } from './components/poll-vote/poll-vote.component';
+import { PollResultsComponent } from './components/poll-results/poll-results.component';
 import { authGuard } from './guards/auth.guard';
 import { adminGuard } from './guards/admin.guard';
 
@@ -44,6 +48,12 @@ export const routes: Routes = [
   { path: 'notices', component: NoticeBoardComponent },
   { path: 'about', component: AboutUsComponent },
   { path: 'search', component: SearchComponent },
+  
+  // Poll Routes (Public)
+  { path: 'polls', component: PollListComponent },
+  { path: 'polls/create', component: PollCreateComponent, canActivate: [authGuard] },
+  { path: 'polls/:id', component: PollVoteComponent },
+  { path: 'polls/:id/results', component: PollResultsComponent },
   
   { path: '**', redirectTo: '/register' }
 ];

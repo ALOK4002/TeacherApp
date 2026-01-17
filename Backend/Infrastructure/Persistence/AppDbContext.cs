@@ -19,6 +19,11 @@ public class AppDbContext : DbContext
     public DbSet<Subscription> Subscriptions { get; set; }
     public DbSet<Payment> Payments { get; set; }
     public DbSet<UserActivity> UserActivities { get; set; }
+    public DbSet<Poll> Polls { get; set; }
+    public DbSet<PollQuestion> PollQuestions { get; set; }
+    public DbSet<PollOption> PollOptions { get; set; }
+    public DbSet<PollResponse> PollResponses { get; set; }
+    public DbSet<PollAnswer> PollAnswers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -301,6 +306,126 @@ public class AppDbContext : DbContext
                   .WithMany(u => u.Activities)
                   .HasForeignKey(e => e.UserId)
                   .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Poll entity configuration
+        modelBuilder.Entity<Poll>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Description).HasMaxLength(1000);
+            entity.Property(e => e.Type).IsRequired();
+            entity.Property(e => e.IsActive).IsRequired();
+            entity.Property(e => e.AllowMultipleVotes).IsRequired();
+            entity.Property(e => e.CreatedDate).IsRequired();
+            entity.Property(e => e.UpdatedDate).IsRequired();
+            
+            entity.HasIndex(e => e.CreatedDate);
+            entity.HasIndex(e => e.IsActive);
+            entity.HasIndex(e => e.Type);
+            
+            // Foreign key relationship
+            entity.HasOne(e => e.CreatedByUser)
+                  .WithMany()
+                  .HasForeignKey(e => e.CreatedByUserId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        // PollQuestion entity configuration
+        modelBuilder.Entity<PollQuestion>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.QuestionText).IsRequired().HasMaxLength(500);
+            entity.Property(e => e.Type).IsRequired();
+            entity.Property(e => e.Order).IsRequired();
+            entity.Property(e => e.IsRequired).IsRequired();
+            entity.Property(e => e.CreatedDate).IsRequired();
+            entity.Property(e => e.UpdatedDate).IsRequired();
+            
+            entity.HasIndex(e => e.PollId);
+            entity.HasIndex(e => e.Order);
+            
+            // Foreign key relationship
+            entity.HasOne(e => e.Poll)
+                  .WithMany(p => p.Questions)
+                  .HasForeignKey(e => e.PollId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // PollOption entity configuration
+        modelBuilder.Entity<PollOption>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.OptionText).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.Order).IsRequired();
+            entity.Property(e => e.VoteCount).IsRequired();
+            entity.Property(e => e.CreatedDate).IsRequired();
+            entity.Property(e => e.UpdatedDate).IsRequired();
+            
+            entity.HasIndex(e => e.PollQuestionId);
+            entity.HasIndex(e => e.Order);
+            
+            // Foreign key relationship
+            entity.HasOne(e => e.PollQuestion)
+                  .WithMany(q => q.Options)
+                  .HasForeignKey(e => e.PollQuestionId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // PollResponse entity configuration
+        modelBuilder.Entity<PollResponse>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.RespondedDate).IsRequired();
+            entity.Property(e => e.UserIpAddress).HasMaxLength(45);
+            entity.Property(e => e.UserAgent).HasMaxLength(500);
+            entity.Property(e => e.IsActive).IsRequired();
+            
+            entity.HasIndex(e => e.PollId);
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => e.RespondedDate);
+            
+            // Foreign key relationships
+            entity.HasOne(e => e.Poll)
+                  .WithMany(p => p.Responses)
+                  .HasForeignKey(e => e.PollId)
+                  .OnDelete(DeleteBehavior.Cascade);
+                  
+            entity.HasOne(e => e.User)
+                  .WithMany()
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Restrict)
+                  .IsRequired(false);
+        });
+
+        // PollAnswer entity configuration
+        modelBuilder.Entity<PollAnswer>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.TextAnswer).HasMaxLength(1000);
+            entity.Property(e => e.RatingValue);
+            entity.Property(e => e.AnsweredDate).IsRequired();
+            
+            entity.HasIndex(e => e.PollResponseId);
+            entity.HasIndex(e => e.PollQuestionId);
+            entity.HasIndex(e => e.PollOptionId);
+            
+            // Foreign key relationships
+            entity.HasOne(e => e.PollResponse)
+                  .WithMany(r => r.Answers)
+                  .HasForeignKey(e => e.PollResponseId)
+                  .OnDelete(DeleteBehavior.Cascade);
+                  
+            entity.HasOne(e => e.PollQuestion)
+                  .WithMany(q => q.Answers)
+                  .HasForeignKey(e => e.PollQuestionId)
+                  .OnDelete(DeleteBehavior.Cascade);
+                  
+            entity.HasOne(e => e.PollOption)
+                  .WithMany(o => o.Answers)
+                  .HasForeignKey(e => e.PollOptionId)
+                  .OnDelete(DeleteBehavior.Restrict)
+                  .IsRequired(false);
         });
 
         base.OnModelCreating(modelBuilder);

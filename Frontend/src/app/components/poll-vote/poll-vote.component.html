@@ -1,0 +1,154 @@
+<div class="poll-vote-container">
+  <div class="header">
+    <button (click)="goToDashboard()" class="back-btn">← Back to Dashboard</button>
+    <button (click)="goBack()" class="back-btn">← Back to Polls</button>
+    <h1 *ngIf="poll">{{ poll.title }}</h1>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Loading poll...</p>
+  </div>
+
+  <div *ngIf="error" class="error">
+    <p>{{ error }}</p>
+    <button (click)="loadPoll(poll!.id)" class="retry-btn">Retry</button>
+  </div>
+
+  <div *ngIf="poll && !loading && !error" class="poll-content">
+    <div class="poll-info">
+      <p *ngIf="poll.description" class="description">{{ poll.description }}</p>
+      <div class="meta-info">
+        <span class="type-badge">{{ getQuestionTypeLabel(poll.type) }}</span>
+        <span *ngIf="poll.allowMultipleVotes" class="multiple-votes-badge">Multiple votes allowed</span>
+        <span *ngIf="isPollExpired()" class="expired-badge">Expired</span>
+        <span *ngIf="poll.endDate" class="end-date">Ends: {{ poll.endDate | date:'medium' }}</span>
+      </div>
+    </div>
+
+    <div *ngIf="hasUserResponded()" class="already-responded">
+      <div class="success-message">
+        <h3>✓ You have already responded to this poll</h3>
+        <p>Your response has been recorded.</p>
+      </div>
+      <div class="response-actions">
+        <button (click)="viewResults()" class="results-btn">View Results</button>
+        <button (click)="goBack()" class="cancel-btn">Back to Polls</button>
+      </div>
+    </div>
+
+    <div *ngIf="!hasUserResponded() && !isPollExpired()" class="poll-form">
+      <form (ngSubmit)="submitResponse()">
+        <div *ngFor="let question of poll.questions; let i = index" class="question-container">
+          <div class="question-header">
+            <h3>{{ i + 1 }}. {{ question.questionText }}</h3>
+            <span class="question-type">{{ getQuestionTypeLabel(question.type) }}</span>
+            <span *ngIf="question.isRequired" class="required-badge">Required</span>
+          </div>
+
+          <!-- Yes/No Question -->
+          <div *ngIf="question.type === 1" class="yes-no-options">
+            <label class="radio-option">
+              <input type="radio" 
+                     [name]="'question_' + question.id" 
+                     [value]="true" 
+                     [checked]="answers[question.id] === true"
+                     (change)="onYesNoChange(question.id, true)">
+              <span>Yes</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" 
+                     [name]="'question_' + question.id" 
+                     [value]="false" 
+                     [checked]="answers[question.id] === false"
+                     (change)="onYesNoChange(question.id, false)">
+              <span>No</span>
+            </label>
+          </div>
+
+          <!-- Multiple Choice Question -->
+          <div *ngIf="question.type === 2" class="multiple-choice-options">
+            <label *ngFor="let option of question.options" class="radio-option">
+              <input type="radio" 
+                     [name]="'question_' + question.id" 
+                     [value]="option.id" 
+                     [checked]="answers[question.id] === option.id"
+                     (change)="onMultipleChoiceChange(question.id, option.id)">
+              <span>{{ option.optionText }}</span>
+            </label>
+          </div>
+
+          <!-- Checkbox Question -->
+          <div *ngIf="question.type === 3" class="checkbox-options">
+            <label *ngFor="let option of question.options" class="checkbox-option">
+              <input type="checkbox" 
+                     [value]="option.id" 
+                     [checked]="answers[question.id]?.includes(option.id)"
+                     (change)="onCheckboxChange(question.id, option.id, $event.target.checked)">
+              <span>{{ option.optionText }}</span>
+            </label>
+          </div>
+
+          <!-- Text Question -->
+          <div *ngIf="question.type === 4" class="text-answer">
+            <textarea [(ngModel)]="answers[question.id]" 
+                      [name]="'question_' + question.id"
+                      placeholder="Enter your answer here..."
+                      rows="4"
+                      class="text-input">
+            </textarea>
+          </div>
+
+          <!-- Rating Question -->
+          <div *ngIf="question.type === 5" class="rating-answer">
+            <div class="rating-stars">
+              <span *ngFor="let star of [1,2,3,4,5]" 
+                    class="star"
+                    [class.active]="answers[question.id] >= star"
+                    (click)="onRatingChange(question.id, star)">
+                ★
+              </span>
+            </div>
+            <span class="rating-value" *ngIf="answers[question.id] > 0">
+              Rating: {{ answers[question.id] }}/5
+            </span>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" 
+                  [disabled]="!isFormValid() || submitting" 
+                  class="submit-btn">
+            <span *ngIf="!submitting">Submit Response</span>
+            <span *ngIf="submitting">Submitting...</span>
+          </button>
+          <button type="button" (click)="goBack()" class="cancel-btn">Cancel</button>
+        </div>
+      </form>
+    </div>
+
+    <div *ngIf="!hasUserResponded() && isPollExpired()" class="poll-expired">
+      <div class="expired-message">
+        <h3>This poll has expired</h3>
+        <p>The poll ended on {{ poll.endDate | date:'medium' }}</p>
+      </div>
+      <div class="expired-actions">
+        <button (click)="viewResults()" class="results-btn">View Results</button>
+        <button (click)="goBack()" class="cancel-btn">Back to Polls</button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="success" class="success-overlay">
+    <div class="success-modal">
+      <div class="success-content">
+        <h2>✓ Response Submitted!</h2>
+        <p>Thank you for participating in this poll.</p>
+        <div class="success-actions">
+          <button (click)="viewResults()" class="results-btn">View Results</button>
+          <button (click)="goBack()" class="cancel-btn">Back to Polls</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

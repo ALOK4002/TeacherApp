@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "q2a9mG4sKMU=",
+  "dgSpecHash": "0nzoU6YAdrY=",
   "success": true,
-  "projectFilePath": "/Users/alokbabu/TeacherVS_2/Backend/WebAPI/WebAPI.csproj",
+  "projectFilePath": "/Users/alokbabu/TeacherApp/TeacherApp/Backend/WebAPI/WebAPI.csproj",
   "expectedPackageFiles": [
     "/Users/alokbabu/.nuget/packages/azure.communication.email/1.0.1/azure.communication.email.1.0.1.nupkg.sha512",
     "/Users/alokbabu/.nuget/packages/azure.core/1.49.0/azure.core.1.49.0.nupkg.sha512",

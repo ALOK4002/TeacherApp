@@ -1,0 +1,229 @@
+<div class="poll-create-container">
+  <div class="header">
+    <button (click)="goToDashboard()" class="back-btn">← Back to Dashboard</button>
+    <button (click)="goBack()" class="back-btn">← Back to Polls</button>
+    <h1>Create New Poll</h1>
+  </div>
+
+  <div *ngIf="success" class="success-message">
+    <div class="success-content">
+      <h2>✓ Poll Created Successfully!</h2>
+      <p>Your poll has been created and is now available for voting.</p>
+      <p>You will be redirected to the poll page shortly...</p>
+    </div>
+  </div>
+
+  <div *ngIf="!success" class="create-form">
+    <form #pollForm="ngForm" (ngSubmit)="submitPoll()">
+      <!-- Basic Poll Information -->
+      <div class="form-section">
+        <h2>Poll Information</h2>
+        
+        <div class="form-group">
+          <label for="title">Poll Title *</label>
+          <input 
+            type="text" 
+            id="title"
+            name="title"
+            [(ngModel)]="poll.title"
+            placeholder="Enter poll title"
+            class="form-control"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea 
+            id="description"
+            name="description"
+            [(ngModel)]="poll.description"
+            placeholder="Enter poll description (optional)"
+            rows="3"
+            class="form-control">
+          </textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="type">Poll Type *</label>
+            <select 
+              id="type"
+              name="type"
+              [(ngModel)]="poll.type"
+              class="form-control">
+              <option *ngFor="let type of pollTypes" [ngValue]="type.value">
+                {{ type.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="endDate">End Date (Optional)</label>
+            <input 
+              type="datetime-local" 
+              id="endDate"
+              name="endDate"
+              [(ngModel)]="poll.endDate"
+              class="form-control">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input 
+              type="checkbox" 
+              name="allowMultipleVotes"
+              [(ngModel)]="poll.allowMultipleVotes">
+            <span>Allow multiple votes per user</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Questions -->
+      <div class="form-section">
+        <div class="section-header">
+          <h2>Questions</h2>
+          <button type="button" (click)="addQuestion()" class="add-question-btn">
+            + Add Question
+          </button>
+        </div>
+
+        <div *ngFor="let question of poll.questions; let i = index; trackBy: trackByFn" class="question-container">
+          <div class="question-header">
+            <h3>Question {{ i + 1 }}</h3>
+            <div class="question-actions">
+              <button 
+                type="button" 
+                (click)="moveQuestionUp(i)"
+                [disabled]="i === 0"
+                class="move-btn"
+                title="Move up">
+                ↑
+              </button>
+              <button 
+                type="button" 
+                (click)="moveQuestionDown(i)"
+                [disabled]="i === poll.questions.length - 1"
+                class="move-btn"
+                title="Move down">
+                ↓
+              </button>
+              <button 
+                type="button" 
+                (click)="removeQuestion(i)"
+                [disabled]="poll.questions.length === 1"
+                class="remove-btn"
+                title="Remove question">
+                ×
+              </button>
+            </div>
+          </div>
+
+          <div class="question-fields">
+            <div class="form-group">
+              <label [for]="'question_' + i">Question Text *</label>
+              <input 
+                type="text" 
+                [id]="'question_' + i"
+                [name]="'questionText_' + i"
+                [(ngModel)]="question.questionText"
+                placeholder="Enter your question"
+                class="form-control"
+                required>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label [for]="'type_' + i">Question Type *</label>
+                <select 
+                  [id]="'type_' + i"
+                  [name]="'questionType_' + i"
+                  [(ngModel)]="question.type"
+                  (change)="onQuestionTypeChange(i, question.type)"
+                  class="form-control">
+                  <option *ngFor="let type of questionTypes" [ngValue]="type.value">
+                    {{ type.label }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="checkbox-label">
+                  <input 
+                    type="checkbox" 
+                    [name]="'questionRequired_' + i"
+                    [(ngModel)]="question.isRequired">
+                  <span>Required question</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Options for Multiple Choice and Checkbox -->
+            <div *ngIf="requiresOptions(question.type)" class="options-container">
+              <div class="options-header">
+                <h4>Answer Options</h4>
+                <button 
+                  type="button" 
+                  (click)="addOption(i)"
+                  class="add-option-btn">
+                  + Add Option
+                </button>
+              </div>
+
+              <div *ngFor="let option of question.options; let j = index; trackBy: trackOptionByFn" class="option-item">
+                <div class="option-content">
+                  <span class="option-number">{{ j + 1 }}.</span>
+                  <input 
+                    type="text" 
+                    [name]="'optionText_' + i + '_' + j"
+                    [(ngModel)]="option.optionText"
+                    placeholder="Enter option text"
+                    class="form-control option-input"
+                    required>
+                  <button 
+                    type="button" 
+                    (click)="removeOption(i, j)"
+                    [disabled]="question.options!.length <= 2"
+                    class="remove-option-btn"
+                    title="Remove option">
+                    ×
+                  </button>
+                </div>
+              </div>
+
+              <div *ngIf="question.options && question.options.length < 2" class="options-warning">
+                <p>At least 2 options are required for this question type.</p>
+              </div>
+            </div>
+
+            <!-- Info for Text and Rating questions -->
+            <div *ngIf="question.type === 4" class="question-info">
+              <p class="info-text">Users will be able to enter a text response.</p>
+            </div>
+
+            <div *ngIf="question.type === 5" class="question-info">
+              <p class="info-text">Users will be able to rate on a scale of 1 to 5 stars.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="error" class="error-message">
+        <p>{{ error }}</p>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button type="button" (click)="goBack()" class="cancel-btn">Cancel</button>
+        <button 
+          type="submit" 
+          [disabled]="pollForm.invalid || submitting"
+          class="submit-btn">
+          <span *ngIf="!submitting">Create Poll</span>
+          <span *ngIf="submitting">Creating...</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

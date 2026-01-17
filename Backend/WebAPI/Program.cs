@@ -1,5 +1,6 @@
 using System.Text;
 using Application.Interfaces;
+using Application.Services;
 using Domain.Interfaces;
 using Infrastructure.Data;
 using Infrastructure.Persistence;
@@ -34,6 +35,8 @@ builder.Services.AddScoped<ITeacherDocumentRepository, TeacherDocumentRepository
 builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IUserActivityRepository, UserActivityRepository>();
+builder.Services.AddScoped<IPollRepository, PollRepository>();
+builder.Services.AddScoped<IPollResponseRepository, PollResponseRepository>();
 
 // Services
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -50,6 +53,7 @@ builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IPaytmService, PaytmService>();
 builder.Services.AddScoped<IUserActivityService, UserActivityService>();
+builder.Services.AddScoped<IPollService, PollService>();
 builder.Services.AddScoped<PasswordService>();
 
 // JWT Service
@@ -94,6 +98,10 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+var webRoot = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+Directory.CreateDirectory(webRoot);
+Directory.CreateDirectory(Path.Combine(webRoot, "uploads"));
+
 // Seed data
 using (var scope = app.Services.CreateScope())
 {
@@ -109,18 +117,23 @@ if (app.Environment.IsDevelopment())
 }
 
 // Enable static files serving
-app.UseDefaultFiles(new DefaultFilesOptions
-{
-    DefaultFileNames = new List<string> { "index.html" },
-    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "browser"))
-});
-
 app.UseStaticFiles(); // Serve files from wwwroot
-app.UseStaticFiles(new StaticFileOptions
+
+var spaRoot = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "browser");
+if (Directory.Exists(spaRoot))
 {
-    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "browser")),
-    RequestPath = ""
-});
+    app.UseDefaultFiles(new DefaultFilesOptions
+    {
+        DefaultFileNames = new List<string> { "index.html" },
+        FileProvider = new PhysicalFileProvider(spaRoot)
+    });
+
+    app.UseStaticFiles(new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(spaRoot),
+        RequestPath = ""
+    });
+}
 
 app.UseHttpsRedirection();
 
@@ -132,7 +145,10 @@ app.UseAuthorization();
 app.MapControllers();
 
 // Fallback to index.html for Angular routing
-app.MapFallbackToFile("browser/index.html");
+if (Directory.Exists(spaRoot))
+{
+    app.MapFallbackToFile("browser/index.html");
+}
 
 // Seed default admin user
 using (var scope = app.Services.CreateScope())

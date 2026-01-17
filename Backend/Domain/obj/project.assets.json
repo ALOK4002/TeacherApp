@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/alokbabu/TeacherVS_2/Backend/Domain/Domain.csproj",
+      "projectUniqueName": "/Users/alokbabu/TeacherApp/TeacherApp/Backend/Domain/Domain.csproj",
       "projectName": "Domain",
-      "projectPath": "/Users/alokbabu/TeacherVS_2/Backend/Domain/Domain.csproj",
+      "projectPath": "/Users/alokbabu/TeacherApp/TeacherApp/Backend/Domain/Domain.csproj",
       "packagesPath": "/Users/alokbabu/.nuget/packages/",
-      "outputPath": "/Users/alokbabu/TeacherVS_2/Backend/Domain/obj/",
+      "outputPath": "/Users/alokbabu/TeacherApp/TeacherApp/Backend/Domain/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/alokbabu/.nuget/NuGet/NuGet.Config"

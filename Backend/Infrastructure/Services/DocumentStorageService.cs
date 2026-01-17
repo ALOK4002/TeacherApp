@@ -8,14 +8,21 @@ namespace Infrastructure.Services;
 
 public class DocumentStorageService : IDocumentStorageService
 {
-    private readonly string _connectionString;
+    private readonly string? _connectionString;
     private readonly string _containerName;
+    private readonly bool _useAzure;
+    private readonly string _localRootPath;
 
     public DocumentStorageService(IConfiguration configuration)
     {
-        _connectionString = configuration["AzureStorage:ConnectionString"] 
-            ?? throw new InvalidOperationException("Azure Storage connection string not configured");
+        _connectionString = configuration["AzureStorage:ConnectionString"];
         _containerName = configuration["AzureStorage:ContainerName"] ?? "student-documents";
+
+        _useAzure = !string.IsNullOrWhiteSpace(_connectionString)
+                   && !_connectionString!.Contains("__AZURE_STORAGE_CONNECTION_STRING__", StringComparison.OrdinalIgnoreCase);
+
+        _localRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+        Directory.CreateDirectory(_localRootPath);
     }
 
     public async Task<(string BlobUrl, string BlobFileName, string ContainerName)> UploadDocumentAsync(
@@ -26,6 +33,28 @@ public class DocumentStorageService : IDocumentStorageService
         if (file == null || file.Length == 0)
         {
             throw new ArgumentException("File is empty or null");
+        }
+
+        if (!_useAzure)
+        {
+            var localFileExtension = Path.GetExtension(file.FileName);
+            var relativePath = Path.Combine(studentId.ToString(), documentType, $"{Guid.NewGuid()}{localFileExtension}")
+                .Replace(Path.DirectorySeparatorChar, '/');
+
+            var physicalPath = Path.Combine(_localRootPath, relativePath.Replace('/', Path.DirectorySeparatorChar));
+            var physicalDir = Path.GetDirectoryName(physicalPath);
+            if (!string.IsNullOrWhiteSpace(physicalDir))
+            {
+                Directory.CreateDirectory(physicalDir);
+            }
+
+            await using (var stream = new FileStream(physicalPath, FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            var url = $"/uploads/{relativePath}";
+            return (url, relativePath, "local");
         }
 
         // Create blob service client
@@ -62,6 +91,16 @@ public class DocumentStorageService : IDocumentStorageService
 
     public async Task<byte[]> DownloadDocumentAsync(string containerName, string blobFileName)
     {
+        if (string.Equals(containerName, "local", StringComparison.OrdinalIgnoreCase) || !_useAzure)
+        {
+            var physicalPath = Path.Combine(_localRootPath, blobFileName.Replace('/', Path.DirectorySeparatorChar));
+            if (!File.Exists(physicalPath))
+            {
+                throw new FileNotFoundException($"File {blobFileName} not found");
+            }
+            return await File.ReadAllBytesAsync(physicalPath);
+        }
+
         var blobServiceClient = new BlobServiceClient(_connectionString);
         var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
         var blobClient = containerClient.GetBlobClient(blobFileName);
@@ -82,6 +121,17 @@ public class DocumentStorageService : IDocumentStorageService
     {
         try
         {
+            if (string.Equals(containerName, "local", StringComparison.OrdinalIgnoreCase) || !_useAzure)
+            {
+                var physicalPath = Path.Combine(_localRootPath, blobFileName.Replace('/', Path.DirectorySeparatorChar));
+                if (!File.Exists(physicalPath))
+                {
+                    return false;
+                }
+                File.Delete(physicalPath);
+                return true;
+            }
+
             var blobServiceClient = new BlobServiceClient(_connectionString);
             var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
             var blobClient = containerClient.GetBlobClient(blobFileName);
@@ -96,6 +146,16 @@ public class DocumentStorageService : IDocumentStorageService
 
     public async Task<string> GetDocumentUrlAsync(string containerName, string blobFileName)
     {
+        if (string.Equals(containerName, "local", StringComparison.OrdinalIgnoreCase) || !_useAzure)
+        {
+            var physicalPath = Path.Combine(_localRootPath, blobFileName.Replace('/', Path.DirectorySeparatorChar));
+            if (!File.Exists(physicalPath))
+            {
+                throw new FileNotFoundException($"File {blobFileName} not found");
+            }
+            return $"/uploads/{blobFileName}";
+        }
+
         var blobServiceClient = new BlobServiceClient(_connectionString);
         var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
         var blobClient = containerClient.GetBlobClient(blobFileName);
@@ -110,6 +170,12 @@ public class DocumentStorageService : IDocumentStorageService
 
     public async Task<bool> DocumentExistsAsync(string containerName, string blobFileName)
     {
+        if (string.Equals(containerName, "local", StringComparison.OrdinalIgnoreCase) || !_useAzure)
+        {
+            var physicalPath = Path.Combine(_localRootPath, blobFileName.Replace('/', Path.DirectorySeparatorChar));
+            return File.Exists(physicalPath);
+        }
+
         var blobServiceClient = new BlobServiceClient(_connectionString);
         var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
         var blobClient = containerClient.GetBlobClient(blobFileName);

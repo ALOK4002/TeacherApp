@@ -4257,11 +4257,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/alokbabu/TeacherVS_2/Backend/Infrastructure/Infrastructure.csproj",
+      "projectUniqueName": "/Users/alokbabu/TeacherApp/TeacherApp/Backend/Infrastructure/Infrastructure.csproj",
       "projectName": "Infrastructure",
-      "projectPath": "/Users/alokbabu/TeacherVS_2/Backend/Infrastructure/Infrastructure.csproj",
+      "projectPath": "/Users/alokbabu/TeacherApp/TeacherApp/Backend/Infrastructure/Infrastructure.csproj",
       "packagesPath": "/Users/alokbabu/.nuget/packages/",
-      "outputPath": "/Users/alokbabu/TeacherVS_2/Backend/Infrastructure/obj/",
+      "outputPath": "/Users/alokbabu/TeacherApp/TeacherApp/Backend/Infrastructure/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/alokbabu/.nuget/NuGet/NuGet.Config"
@@ -4276,11 +4276,11 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "projectReferences": {
-            "/Users/alokbabu/TeacherVS_2/Backend/Application/Application.csproj": {
-              "projectPath": "/Users/alokbabu/TeacherVS_2/Backend/Application/Application.csproj"
+            "/Users/alokbabu/TeacherApp/TeacherApp/Backend/Application/Application.csproj": {
+              "projectPath": "/Users/alokbabu/TeacherApp/TeacherApp/Backend/Application/Application.csproj"
             },
-            "/Users/alokbabu/TeacherVS_2/Backend/Domain/Domain.csproj": {
-              "projectPath": "/Users/alokbabu/TeacherVS_2/Backend/Domain/Domain.csproj"
+            "/Users/alokbabu/TeacherApp/TeacherApp/Backend/Domain/Domain.csproj": {
+              "projectPath": "/Users/alokbabu/TeacherApp/TeacherApp/Backend/Domain/Domain.csproj"
             }
           }
         }

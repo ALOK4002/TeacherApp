@@ -10,3 +10,15 @@
 /Users/alokbabu/TeacherVS_2/Backend/Domain/obj/Debug/net10.0/Domain.pdb
 /Users/alokbabu/TeacherVS_2/Backend/Domain/obj/Debug/net10.0/ref/Domain.dll
 /Users/alokbabu/TeacherVS_2/Backend/Domain/obj/Debug/net10.0/Domain.sourcelink.json
+/Users/alokbabu/TeacherApp/TeacherApp/Backend/Domain/bin/Debug/net10.0/Domain.deps.json
+/Users/alokbabu/TeacherApp/TeacherApp/Backend/Domain/bin/Debug/net10.0/Domain.dll
+/Users/alokbabu/TeacherApp/TeacherApp/Backend/Domain/bin/Debug/net10.0/Domain.pdb
+/Users/alokbabu/TeacherApp/TeacherApp/Backend/Domain/obj/Debug/net10.0/Domain.GeneratedMSBuildEditorConfig.editorconfig
+/Users/alokbabu/TeacherApp/TeacherApp/Backend/Domain/obj/Debug/net10.0/Domain.AssemblyInfoInputs.cache
+/Users/alokbabu/TeacherApp/TeacherApp/Backend/Domain/obj/Debug/net10.0/Domain.AssemblyInfo.cs
+/Users/alokbabu/TeacherApp/TeacherApp/Backend/Domain/obj/Debug/net10.0/Domain.csproj.CoreCompileInputs.cache
+/Users/alokbabu/TeacherApp/TeacherApp/Backend/Domain/obj/Debug/net10.0/Domain.sourcelink.json
+/Users/alokbabu/TeacherApp/TeacherApp/Backend/Domain/obj/Debug/net10.0/Domain.dll
+/Users/alokbabu/TeacherApp/TeacherApp/Backend/Domain/obj/Debug/net10.0/refint/Domain.dll
+/Users/alokbabu/TeacherApp/TeacherApp/Backend/Domain/obj/Debug/net10.0/Domain.pdb
+/Users/alokbabu/TeacherApp/TeacherApp/Backend/Domain/obj/Debug/net10.0/ref/Domain.dll

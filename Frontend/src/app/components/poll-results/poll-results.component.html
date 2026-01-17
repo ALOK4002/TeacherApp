@@ -1,0 +1,124 @@
+<div class="poll-results-container">
+  <div class="header">
+    <button (click)="goToDashboard()" class="back-btn">← Back to Dashboard</button>
+    <button (click)="goBack()" class="back-btn">← Back to Polls</button>
+    <h1 *ngIf="poll">{{ poll.title }} - Results</h1>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Loading results...</p>
+  </div>
+
+  <div *ngIf="error" class="error">
+    <p>{{ error }}</p>
+    <button (click)="loadPollResults(poll!.id)" class="retry-btn">Retry</button>
+  </div>
+
+  <div *ngIf="poll && pollResult && !loading && !error" class="results-content">
+    <div class="poll-summary">
+      <div class="summary-info">
+        <p *ngIf="poll.description" class="description">{{ poll.description }}</p>
+        <div class="meta-info">
+          <span class="type-badge">{{ getPollTypeLabel(poll.type) }}</span>
+          <span class="response-count">{{ pollResult.totalResponses }} responses</span>
+          <span *ngIf="poll.createdByUserName" class="creator">Created by {{ poll.createdByUserName }}</span>
+          <span class="created-date">Created on {{ formatDate(poll.createdDate) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="questions-results">
+      <div *ngFor="let question of pollResult.questions; let i = index" class="question-result">
+        <div class="question-header">
+          <h3>{{ i + 1 }}. {{ question.questionText }}</h3>
+          <span class="question-type">{{ getQuestionTypeLabel(question.type) }}</span>
+          <span *ngIf="question.isRequired" class="required-badge">Required</span>
+        </div>
+
+        <!-- Yes/No Results -->
+        <div *ngIf="question.type === 1" class="yes-no-results">
+          <div *ngFor="let option of question.options" class="option-result">
+            <div class="option-info">
+              <span class="option-text">{{ option.optionText }}</span>
+              <span class="vote-count">{{ option.voteCount }} votes</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" 
+                   [style.width.%]="option.percentage"
+                   [style.background-color]="getPercentageColor(option.percentage)">
+              </div>
+            </div>
+            <span class="percentage">{{ option.percentage.toFixed(1) }}%</span>
+          </div>
+        </div>
+
+        <!-- Multiple Choice Results -->
+        <div *ngIf="question.type === 2" class="multiple-choice-results">
+          <div *ngFor="let option of question.options" class="option-result">
+            <div class="option-info">
+              <span class="option-text">{{ option.optionText }}</span>
+              <span class="vote-count">{{ option.voteCount }} votes</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" 
+                   [style.width.%]="option.percentage"
+                   [style.background-color]="getPercentageColor(option.percentage)">
+              </div>
+            </div>
+            <span class="percentage">{{ option.percentage.toFixed(1) }}%</span>
+          </div>
+        </div>
+
+        <!-- Checkbox Results -->
+        <div *ngIf="question.type === 3" class="checkbox-results">
+          <div *ngFor="let option of question.options" class="option-result">
+            <div class="option-info">
+              <span class="option-text">{{ option.optionText }}</span>
+              <span class="vote-count">{{ option.voteCount }} votes</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" 
+                   [style.width.%]="option.percentage"
+                   [style.background-color]="getPercentageColor(option.percentage)">
+              </div>
+            </div>
+            <span class="percentage">{{ option.percentage.toFixed(1) }}%</span>
+          </div>
+        </div>
+
+        <!-- Text Results -->
+        <div *ngIf="question.type === 4" class="text-results">
+          <div class="text-summary">
+            <p><strong>{{ question.textAnswers.length }} text responses</strong></p>
+          </div>
+          <div *ngIf="question.textAnswers.length > 0" class="text-answers">
+            <div *ngFor="let answer of question.textAnswers; let last = last" class="text-answer">
+              <p>{{ answer }}</p>
+              <div *ngIf="!last" class="answer-divider"></div>
+            </div>
+          </div>
+          <div *ngIf="question.textAnswers.length === 0" class="no-responses">
+            <p>No text responses yet.</p>
+          </div>
+        </div>
+
+        <!-- Rating Results -->
+        <div *ngIf="question.type === 5" class="rating-results">
+          <div class="rating-summary">
+            <div class="rating-average">
+              <span class="rating-stars">{{ getRatingStars(question.ratingAverage || 0) }}</span>
+              <span class="rating-value">{{ (question.ratingAverage || 0).toFixed(1) }}/5</span>
+              <span class="response-count">({{ pollResult.totalResponses }} ratings)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button (click)="voteAgain()" class="vote-btn">Vote Again</button>
+      <button (click)="goBack()" class="back-btn">Back to Polls</button>
+    </div>
+  </div>
+</div>
