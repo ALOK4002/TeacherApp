@@ -11,6 +11,9 @@ import { TeacherReportComponent } from './components/teacher-report/teacher-repo
 import { TeacherDocumentsComponent } from './components/teacher-documents/teacher-documents.component';
 import { SelfDeclarationComponent } from './components/self-declaration/self-declaration.component';
 import { MyDocumentsComponent } from './components/my-documents/my-documents.component';
+import { MyActivityComponent } from './components/my-activity/my-activity.component';
+import { PaymentResultComponent } from './components/payment-result/payment-result.component';
+import { PaymentApprovalComponent } from './components/payment-approval/payment-approval.component';
 import { UserDashboardComponent } from './components/user-dashboard/user-dashboard.component';
 import { UserOnboardingComponent } from './components/user-onboarding/user-onboarding.component';
 import { authGuard } from './guards/auth.guard';
@@ -25,10 +28,13 @@ export const routes: Routes = [
   // User Routes (Protected)
   { path: 'self-declaration', component: SelfDeclarationComponent, canActivate: [authGuard] },
   { path: 'my-documents', component: MyDocumentsComponent, canActivate: [authGuard] },
+  { path: 'my-activity', component: MyActivityComponent, canActivate: [authGuard] },
   { path: 'user-dashboard', component: UserDashboardComponent, canActivate: [authGuard] },
+  { path: 'payment-result', component: PaymentResultComponent, canActivate: [authGuard] },
   
   // Admin Routes (Protected)
   { path: 'user-onboarding', component: UserOnboardingComponent, canActivate: [authGuard, adminGuard] },
+  { path: 'payment-approval', component: PaymentApprovalComponent, canActivate: [authGuard, adminGuard] },
   { path: 'schools', component: SchoolManagementComponent, canActivate: [authGuard, adminGuard] },
   { path: 'teachers', component: TeacherManagementComponent, canActivate: [authGuard, adminGuard] },
   { path: 'teacher-report', component: TeacherReportComponent, canActivate: [authGuard, adminGuard] },

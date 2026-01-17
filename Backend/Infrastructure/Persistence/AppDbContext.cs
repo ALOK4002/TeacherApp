@@ -16,6 +16,9 @@ public class AppDbContext : DbContext
     public DbSet<Notice> Notices { get; set; }
     public DbSet<NoticeReply> NoticeReplies { get; set; }
     public DbSet<TeacherDocument> TeacherDocuments { get; set; }
+    public DbSet<Subscription> Subscriptions { get; set; }
+    public DbSet<Payment> Payments { get; set; }
+    public DbSet<UserActivity> UserActivities { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -209,6 +212,95 @@ public class AppDbContext : DbContext
                   .HasForeignKey(e => e.UserId)
                   .OnDelete(DeleteBehavior.Cascade)
                   .IsRequired(false);
+        });
+
+        // Subscription entity configuration
+        modelBuilder.Entity<Subscription>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Tier).IsRequired();
+            entity.Property(e => e.Status).IsRequired();
+            entity.Property(e => e.StartDate).IsRequired();
+            entity.Property(e => e.DocumentUploadLimit).IsRequired();
+            entity.Property(e => e.FileSizeLimitInBytes).IsRequired();
+            entity.Property(e => e.DocumentsUploaded).IsRequired();
+            entity.Property(e => e.IsActive).IsRequired();
+            entity.Property(e => e.CreatedDate).IsRequired();
+            entity.Property(e => e.UpdatedDate).IsRequired();
+            
+            entity.HasIndex(e => e.UserId).IsUnique();
+            entity.HasIndex(e => e.Tier);
+            entity.HasIndex(e => e.Status);
+            
+            // Foreign key relationship
+            entity.HasOne(e => e.User)
+                  .WithOne(u => u.Subscription)
+                  .HasForeignKey<Subscription>(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // Payment entity configuration
+        modelBuilder.Entity<Payment>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.OrderId).IsRequired().HasMaxLength(100);
+            entity.Property(e => e.TransactionId).HasMaxLength(100);
+            entity.Property(e => e.Amount).IsRequired().HasColumnType("decimal(18,2)");
+            entity.Property(e => e.Currency).IsRequired().HasMaxLength(3);
+            entity.Property(e => e.Status).IsRequired();
+            entity.Property(e => e.Gateway).IsRequired();
+            entity.Property(e => e.GatewayOrderId).HasMaxLength(100);
+            entity.Property(e => e.GatewayTransactionId).HasMaxLength(100);
+            entity.Property(e => e.GatewayResponse).HasMaxLength(2000);
+            entity.Property(e => e.ChecksumHash).HasMaxLength(500);
+            entity.Property(e => e.RejectionReason).HasMaxLength(500);
+            entity.Property(e => e.IsActive).IsRequired();
+            entity.Property(e => e.CreatedDate).IsRequired();
+            entity.Property(e => e.UpdatedDate).IsRequired();
+            
+            entity.HasIndex(e => e.OrderId).IsUnique();
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => e.Status);
+            entity.HasIndex(e => e.CreatedDate);
+            
+            // Foreign key relationships
+            entity.HasOne(e => e.User)
+                  .WithMany(u => u.Payments)
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+                  
+            entity.HasOne(e => e.Subscription)
+                  .WithMany(s => s.Payments)
+                  .HasForeignKey(e => e.SubscriptionId)
+                  .OnDelete(DeleteBehavior.Restrict);
+                  
+            entity.HasOne(e => e.ApprovedByUser)
+                  .WithMany()
+                  .HasForeignKey(e => e.ApprovedByUserId)
+                  .OnDelete(DeleteBehavior.Restrict)
+                  .IsRequired(false);
+        });
+
+        // UserActivity entity configuration
+        modelBuilder.Entity<UserActivity>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.ActivityType).IsRequired();
+            entity.Property(e => e.ActivityDescription).IsRequired().HasMaxLength(500);
+            entity.Property(e => e.EntityType).HasMaxLength(50);
+            entity.Property(e => e.Metadata).HasMaxLength(2000);
+            entity.Property(e => e.ActivityDate).IsRequired();
+            entity.Property(e => e.IsActive).IsRequired();
+            
+            entity.HasIndex(e => e.UserId);
+            entity.HasIndex(e => e.ActivityType);
+            entity.HasIndex(e => e.ActivityDate);
+            
+            // Foreign key relationship
+            entity.HasOne(e => e.User)
+                  .WithMany(u => u.Activities)
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
 
         base.OnModelCreating(modelBuilder);

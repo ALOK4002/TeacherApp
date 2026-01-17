@@ -1,0 +1,79 @@
+<div class="activity-container">
+  <div class="header-section">
+    <h1 class="ms-fontSize-32 ms-fontWeight-bold">
+      <span class="education-icon">📋</span>
+      My Activity
+    </h1>
+    <button class="ms-Button ms-Button--secondary" (click)="goToDashboard()">
+      <span class="education-icon">🏠</span>
+      Back to Dashboard
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-message" *ngIf="isLoading && activities.length === 0">
+    <span class="loading-spinner">⏳</span>
+    Loading your activities...
+  </div>
+
+  <!-- Error Message -->
+  <div class="error-message" *ngIf="errorMessage">
+    <span class="education-icon">❌</span>
+    {{ errorMessage }}
+  </div>
+
+  <!-- No Activities -->
+  <div class="no-activities" *ngIf="!isLoading && activities.length === 0 && !errorMessage">
+    <span class="education-icon" style="font-size: 48px;">📭</span>
+    <h3>No Activities Yet</h3>
+    <p>Your activities will appear here as you use the portal</p>
+  </div>
+
+  <!-- Activities Timeline -->
+  <div class="activities-timeline" *ngIf="activities.length > 0">
+    <div class="timeline-item" *ngFor="let activity of activities">
+      <div class="timeline-marker" [style.background-color]="activity.activityColor">
+        <span class="activity-icon">{{ activity.activityIcon }}</span>
+      </div>
+      
+      <div class="timeline-content">
+        <div class="activity-header">
+          <h3 class="activity-title">{{ getActivityTypeLabel(activity.activityType) }}</h3>
+          <span class="activity-time">{{ getRelativeTime(activity.activityDate) }}</span>
+        </div>
+        
+        <p class="activity-description">{{ activity.activityDescription }}</p>
+        
+        <div class="activity-metadata" *ngIf="activity.entityType">
+          <span class="metadata-item">
+            <span class="education-icon">🏷️</span>
+            {{ activity.entityType }}
+            <span *ngIf="activity.entityId">#{{ activity.entityId }}</span>
+          </span>
+        </div>
+        
+        <div class="activity-date">
+          {{ activity.activityDate | date: 'MMM d, yyyy h:mm a' }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load More Button -->
+  <div class="load-more-section" *ngIf="hasMoreActivities && activities.length > 0">
+    <button 
+      class="ms-Button ms-Button--secondary load-more-btn" 
+      (click)="loadMoreActivities()"
+      [disabled]="isLoading"
+    >
+      <span class="loading-spinner" *ngIf="isLoading">⏳</span>
+      <span *ngIf="!isLoading">Load More Activities</span>
+    </button>
+  </div>
+
+  <!-- End of Activities -->
+  <div class="end-of-activities" *ngIf="!hasMoreActivities && activities.length > 0">
+    <span class="education-icon">✅</span>
+    <span>You've reached the end of your activities</span>
+  </div>
+</div>

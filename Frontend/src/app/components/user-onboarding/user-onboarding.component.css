@@ -16,6 +16,16 @@
   flex: 1;
 }
 
+.header-actions {
+  display: flex;
+  gap: var(--spacing-m);
+  align-items: center;
+}
+
+.nav-btn {
+  margin-top: var(--spacing-xs);
+}
+
 .logout-btn {
   margin-top: var(--spacing-xs);
 }

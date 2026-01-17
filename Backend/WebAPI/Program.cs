@@ -31,6 +31,9 @@ builder.Services.AddScoped<ISchoolRepository, SchoolRepository>();
 builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
 builder.Services.AddScoped<INoticeRepository, NoticeRepository>();
 builder.Services.AddScoped<ITeacherDocumentRepository, TeacherDocumentRepository>();
+builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<IUserActivityRepository, UserActivityRepository>();
 
 // Services
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -43,6 +46,10 @@ builder.Services.AddScoped<ISearchService, SearchService>();
 builder.Services.AddScoped<ITeacherDocumentService, TeacherDocumentService>();
 builder.Services.AddScoped<IDocumentStorageService, DocumentStorageService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IPaytmService, PaytmService>();
+builder.Services.AddScoped<IUserActivityService, UserActivityService>();
 builder.Services.AddScoped<PasswordService>();
 
 // JWT Service

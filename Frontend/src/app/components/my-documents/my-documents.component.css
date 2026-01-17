@@ -7,8 +7,159 @@
 .header-section {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: var(--spacing-xxl);
+}
+
+.header-title {
+  flex: 1;
+}
+
+.subscription-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-m);
+  margin-top: var(--spacing-s);
+}
+
+.subscription-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: var(--font-size-12);
+  font-weight: 600;
+  color: white;
+}
+
+.badge-free {
+  background: #737373;
+}
+
+.badge-premium {
+  background: linear-gradient(135deg, #ffd700, #ffb347);
+  color: #333;
+}
+
+.upload-limit {
+  font-size: var(--font-size-12);
+  color: var(--neutral-gray-90);
+}
+
+/* Subscription Card */
+.subscription-card {
+  padding: var(--spacing-xl);
+  background: var(--neutral-white);
+  border-radius: var(--border-radius-large);
+  box-shadow: var(--shadow-8);
+  margin-bottom: var(--spacing-xl);
+}
+
+.subscription-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-l);
+}
+
+.upgrade-btn {
+  background: linear-gradient(135deg, #ffd700, #ffb347);
+  color: #333;
+  font-weight: 600;
+}
+
+.upgrade-btn:hover {
+  background: linear-gradient(135deg, #ffb347, #ffd700);
+}
+
+.subscription-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-l);
+}
+
+.subscription-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-l);
+}
+
+.subscription-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.subscription-label {
+  font-size: var(--font-size-12);
+  font-weight: 600;
+  color: var(--neutral-gray-90);
+}
+
+.subscription-value {
+  font-size: var(--font-size-16);
+  font-weight: 600;
+  color: var(--neutral-gray-160);
+}
+
+.text-warning {
+  color: #ca5010 !important;
+}
+
+.progress-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s);
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progress-label {
+  font-size: var(--font-size-14);
+  font-weight: 600;
+  color: var(--neutral-gray-130);
+}
+
+.progress-text {
+  font-size: var(--font-size-12);
+  color: var(--neutral-gray-90);
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--neutral-gray-30);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0078d4, #107c10);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.upgrade-notice {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-s);
+  padding: var(--spacing-m);
+  background: #fff4e5;
+  border: 1px solid #ffaa44;
+  border-radius: var(--border-radius-medium);
+  color: #ca5010;
+  font-size: var(--font-size-14);
+}
+
+.upgrade-btn-small {
+  background: linear-gradient(135deg, #ffd700, #ffb347);
+  color: #333;
+  font-weight: 600;
+  font-size: var(--font-size-12);
+  padding: var(--spacing-s) var(--spacing-m);
 }
 
 .education-icon {
@@ -362,6 +513,107 @@
   }
 }
 
+/* Upgrade Modal */
+.upgrade-modal {
+  max-width: 700px;
+  width: 95%;
+}
+
+.upgrade-comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-l);
+  margin-bottom: var(--spacing-xl);
+}
+
+.plan-card {
+  padding: var(--spacing-l);
+  border-radius: var(--border-radius-medium);
+  border: 2px solid var(--neutral-gray-30);
+  text-align: center;
+}
+
+.current-plan {
+  background: var(--neutral-gray-10);
+}
+
+.premium-plan {
+  background: linear-gradient(135deg, #fff9e6, #fff4e5);
+  border-color: #ffd700;
+  position: relative;
+}
+
+.premium-plan::before {
+  content: "RECOMMENDED";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffd700;
+  color: #333;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: var(--font-size-10);
+  font-weight: 700;
+}
+
+.plan-card h3 {
+  margin: 0 0 var(--spacing-m);
+  font-size: var(--font-size-18);
+  font-weight: 600;
+}
+
+.plan-features {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-s);
+  margin-bottom: var(--spacing-l);
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-s);
+  font-size: var(--font-size-14);
+}
+
+.plan-price {
+  font-size: var(--font-size-24);
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.upgrade-benefits {
+  margin-bottom: var(--spacing-l);
+}
+
+.upgrade-benefits h4 {
+  margin: 0 0 var(--spacing-m);
+  font-size: var(--font-size-16);
+  font-weight: 600;
+}
+
+.upgrade-benefits ul {
+  margin: 0;
+  padding-left: var(--spacing-l);
+}
+
+.upgrade-benefits li {
+  margin-bottom: var(--spacing-s);
+  font-size: var(--font-size-14);
+}
+
+.payment-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-s);
+  padding: var(--spacing-m);
+  background: var(--neutral-gray-10);
+  border-radius: var(--border-radius-medium);
+  font-size: var(--font-size-12);
+  color: var(--neutral-gray-110);
+}
+
 @media (max-width: 768px) {
   .my-documents-container {
     padding: var(--spacing-l);
@@ -387,5 +639,13 @@
   
   .action-btn {
     width: 100%;
+  }
+
+  .subscription-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .upgrade-comparison {
+    grid-template-columns: 1fr;
   }
 }

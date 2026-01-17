@@ -1,13 +1,81 @@
 <div class="my-documents-container">
   <div class="header-section">
-    <h1 class="ms-fontSize-32 ms-fontWeight-bold">
-      <span class="education-icon">📄</span>
-      My Documents
-    </h1>
+    <div class="header-title">
+      <h1 class="ms-fontSize-32 ms-fontWeight-bold">
+        <span class="education-icon">📄</span>
+        My Documents
+      </h1>
+      <div class="subscription-info" *ngIf="subscription">
+        <span class="subscription-badge" [class]="getSubscriptionBadgeClass()">
+          {{ getSubscriptionLabel() }}
+        </span>
+        <span class="upload-limit">
+          {{ subscription.documentsUploaded }}/{{ subscription.documentUploadLimit }} uploads used
+        </span>
+      </div>
+    </div>
     <button class="ms-Button ms-Button--secondary" (click)="goToDashboard()">
       <span class="education-icon">🏠</span>
       Back to Dashboard
     </button>
+  </div>
+
+  <!-- Subscription Status Card -->
+  <div class="subscription-card ms-Card ms-Card--elevated" *ngIf="subscription">
+    <div class="subscription-header">
+      <h2 class="ms-fontSize-20 ms-fontWeight-semibold">
+        <span class="education-icon">💎</span>
+        Subscription Status
+      </h2>
+      <button 
+        class="ms-Button ms-Button--knowledge upgrade-btn" 
+        *ngIf="subscription.tier === SubscriptionTier.Free"
+        (click)="openUpgradeDialog()"
+      >
+        <span class="education-icon">⬆️</span>
+        Upgrade to Premium
+      </button>
+    </div>
+
+    <div class="subscription-details">
+      <div class="subscription-grid">
+        <div class="subscription-item">
+          <span class="subscription-label">Plan</span>
+          <span class="subscription-value" [class]="getSubscriptionBadgeClass()">
+            {{ getSubscriptionLabel() }}
+          </span>
+        </div>
+        <div class="subscription-item">
+          <span class="subscription-label">Upload Limit</span>
+          <span class="subscription-value">{{ subscription.documentUploadLimit }} documents</span>
+        </div>
+        <div class="subscription-item">
+          <span class="subscription-label">File Size Limit</span>
+          <span class="subscription-value">{{ subscription.fileSizeLimitFormatted }}</span>
+        </div>
+        <div class="subscription-item">
+          <span class="subscription-label">Remaining Uploads</span>
+          <span class="subscription-value" [class.text-warning]="subscription.remainingUploads <= 1">
+            {{ subscription.remainingUploads }}
+          </span>
+        </div>
+      </div>
+
+      <div class="progress-section">
+        <div class="progress-header">
+          <span class="progress-label">Upload Progress</span>
+          <span class="progress-text">{{ subscription.documentsUploaded }}/{{ subscription.documentUploadLimit }}</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="getProgressPercentage()"></div>
+        </div>
+      </div>
+
+      <div class="upgrade-notice" *ngIf="subscription.tier === SubscriptionTier.Free && subscription.remainingUploads <= 1">
+        <span class="education-icon">⚠️</span>
+        <span>You're running low on uploads! Upgrade to Premium for 10 uploads and larger file sizes.</span>
+      </div>
+    </div>
   </div>
 
   <!-- Upload Section -->
@@ -57,7 +125,12 @@
             class="file-input"
             accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
           >
-          <small class="file-hint">Accepted formats: PDF, DOC, DOCX, JPG, PNG (Max 10MB)</small>
+          <small class="file-hint" *ngIf="subscription">
+            Accepted formats: PDF, DOC, DOCX, JPG, PNG (Max {{ subscription.fileSizeLimitFormatted }})
+          </small>
+          <small class="file-hint" *ngIf="!subscription">
+            Accepted formats: PDF, DOC, DOCX, JPG, PNG
+          </small>
         </div>
       </div>
 
@@ -65,11 +138,21 @@
         <button 
           type="submit" 
           class="ms-Button ms-Button--knowledge"
-          [disabled]="uploadForm.invalid || isUploading"
+          [disabled]="uploadForm.invalid || isUploading || (subscription && subscription.remainingUploads <= 0)"
         >
           <span class="education-icon" *ngIf="!isUploading">📤</span>
           <span class="loading-spinner" *ngIf="isUploading">⏳</span>
           {{ isUploading ? 'Uploading...' : 'Upload Document' }}
+        </button>
+        
+        <button 
+          type="button" 
+          class="ms-Button ms-Button--knowledge upgrade-btn-small" 
+          *ngIf="subscription && subscription.tier === SubscriptionTier.Free && subscription.remainingUploads <= 0"
+          (click)="openUpgradeDialog()"
+        >
+          <span class="education-icon">⬆️</span>
+          Upgrade to Upload More
         </button>
       </div>
     </form>
@@ -209,6 +292,87 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Upgrade Dialog -->
+  <div class="modal-overlay" *ngIf="showUpgradeDialog" (click)="closeUpgradeDialog()">
+    <div class="modal-content upgrade-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="ms-fontSize-24">
+          <span class="education-icon">💎</span>
+          Upgrade to Premium
+        </h2>
+        <button class="close-btn" (click)="closeUpgradeDialog()">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="upgrade-comparison">
+          <div class="plan-card current-plan">
+            <h3>Free Plan</h3>
+            <div class="plan-features">
+              <div class="feature">
+                <span class="education-icon">📄</span>
+                <span>3 document uploads</span>
+              </div>
+              <div class="feature">
+                <span class="education-icon">📦</span>
+                <span>500 KB file size limit</span>
+              </div>
+            </div>
+            <div class="plan-price">₹0</div>
+          </div>
+
+          <div class="plan-card premium-plan">
+            <h3>Premium Plan</h3>
+            <div class="plan-features">
+              <div class="feature">
+                <span class="education-icon">📄</span>
+                <span>10 document uploads</span>
+              </div>
+              <div class="feature">
+                <span class="education-icon">📦</span>
+                <span>1 MB file size limit</span>
+              </div>
+              <div class="feature">
+                <span class="education-icon">⚡</span>
+                <span>Priority support</span>
+              </div>
+              <div class="feature">
+                <span class="education-icon">🔒</span>
+                <span>Enhanced security</span>
+              </div>
+            </div>
+            <div class="plan-price">₹99/year</div>
+          </div>
+        </div>
+
+        <div class="upgrade-benefits">
+          <h4>Why upgrade to Premium?</h4>
+          <ul>
+            <li>Upload up to 10 documents (vs 3 in Free)</li>
+            <li>Larger file size limit (1MB vs 500KB)</li>
+            <li>Priority customer support</li>
+            <li>Enhanced document security</li>
+            <li>Early access to new features</li>
+          </ul>
+        </div>
+
+        <div class="payment-notice">
+          <span class="education-icon">ℹ️</span>
+          <span>Payment will be processed securely through Paytm. Your subscription will be activated after admin approval.</span>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="ms-Button ms-Button--secondary" (click)="closeUpgradeDialog()">
+          Maybe Later
+        </button>
+        <button type="button" class="ms-Button ms-Button--knowledge" (click)="upgradeToPremium()">
+          <span class="education-icon">💳</span>
+          Pay ₹99 & Upgrade
+        </button>
+      </div>
     </div>
   </div>
 </div>

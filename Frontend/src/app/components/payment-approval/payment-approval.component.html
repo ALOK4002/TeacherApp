@@ -1,0 +1,100 @@
+<div class="payment-approval-container">
+  <div class="header">
+    <div class="header-title">
+      <h2>Payment Approval</h2>
+      <p class="subtitle">Review and approve premium membership payments</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary nav-btn" (click)="navigateToUserOnboarding()">
+        <i class="icon-users"></i>
+        User Management
+      </button>
+      <button class="btn btn-secondary logout-btn" (click)="logout()">
+        <i class="icon-logout"></i>
+        Logout
+      </button>
+    </div>
+  </div>
+
+  <div class="content" *ngIf="!loading && !error">
+    <div class="stats-cards">
+      <div class="stat-card">
+        <div class="stat-number">{{ payments.length }}</div>
+        <div class="stat-label">Pending Approvals</div>
+      </div>
+    </div>
+
+    <div class="payments-section" *ngIf="payments.length > 0">
+      <div class="section-header">
+        <h3>Pending Payment Approvals</h3>
+      </div>
+
+      <div class="payments-grid">
+        <div class="payment-card" *ngFor="let payment of payments">
+          <div class="payment-header">
+            <div class="user-info">
+              <h4>{{ payment.userName || 'Unknown User' }}</h4>
+              <p class="email">{{ payment.userEmail || 'No email' }}</p>
+            </div>
+            <div class="payment-amount">
+              <span class="amount">{{ formatAmount(payment.amount) }}</span>
+              <span class="status-badge pending">{{ payment.status }}</span>
+            </div>
+          </div>
+
+          <div class="payment-details">
+            <div class="detail-row">
+              <span class="label">Transaction ID:</span>
+              <span class="value">{{ payment.transactionId }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Payment Method:</span>
+              <span class="value">{{ payment.paymentMethod || payment.gateway || 'Unknown' }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Request Date:</span>
+              <span class="value">{{ formatDate(payment.createdDate) }}</span>
+            </div>
+          </div>
+
+          <div class="payment-actions">
+            <button 
+              class="btn btn-approve" 
+              (click)="approvePayment(payment.id)"
+              title="Approve Payment">
+              <i class="icon-check"></i>
+              Approve
+            </button>
+            <button 
+              class="btn btn-reject" 
+              (click)="rejectPayment(payment.id)"
+              title="Reject Payment">
+              <i class="icon-close"></i>
+              Reject
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="payments.length === 0">
+      <div class="empty-icon">💳</div>
+      <h3>No Pending Payments</h3>
+      <p>All payment requests have been processed.</p>
+    </div>
+  </div>
+
+  <div class="loading-state" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Loading payment requests...</p>
+  </div>
+
+  <div class="error-state" *ngIf="error">
+    <div class="error-icon">⚠️</div>
+    <h3>Error Loading Payments</h3>
+    <p>{{ error }}</p>
+    <button class="btn btn-primary" (click)="loadPendingPayments()">
+      Try Again
+    </button>
+  </div>
+</div>

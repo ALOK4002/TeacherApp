@@ -12,17 +12,23 @@ public class TeacherDocumentService : ITeacherDocumentService
     private readonly ITeacherRepository _teacherRepository;
     private readonly IDocumentStorageService _storageService;
     private readonly IEmailService _emailService;
+    private readonly ISubscriptionService _subscriptionService;
+    private readonly IUserActivityService _activityService;
 
     public TeacherDocumentService(
         ITeacherDocumentRepository documentRepository,
         ITeacherRepository teacherRepository,
         IDocumentStorageService storageService,
-        IEmailService emailService)
+        IEmailService emailService,
+        ISubscriptionService subscriptionService,
+        IUserActivityService activityService)
     {
         _documentRepository = documentRepository;
         _teacherRepository = teacherRepository;
         _storageService = storageService;
         _emailService = emailService;
+        _subscriptionService = subscriptionService;
+        _activityService = activityService;
     }
 
     public async Task<TeacherDocumentDto> UploadDocumentAsync(
@@ -81,6 +87,25 @@ public class TeacherDocumentService : ITeacherDocumentService
         string customDocumentType,
         string remarks)
     {
+        // Check subscription limits
+        var canUpload = await _subscriptionService.CanUploadDocumentAsync(userId, file.Length);
+        if (!canUpload)
+        {
+            var subscription = await _subscriptionService.GetUserSubscriptionAsync(userId);
+            if (subscription != null)
+            {
+                if (file.Length > subscription.FileSizeLimitInBytes)
+                {
+                    throw new InvalidOperationException($"File size exceeds limit. Maximum allowed: {subscription.FileSizeLimitFormatted}");
+                }
+                if (subscription.DocumentsUploaded >= subscription.DocumentUploadLimit)
+                {
+                    throw new InvalidOperationException($"Upload limit reached. You have uploaded {subscription.DocumentsUploaded}/{subscription.DocumentUploadLimit} documents. Upgrade to Premium for more uploads.");
+                }
+            }
+            throw new InvalidOperationException("Cannot upload document. Please check your subscription limits.");
+        }
+
         // Upload to Azure Blob Storage (use userId as folder)
         var (blobUrl, blobFileName, containerName) = await _storageService.UploadDocumentAsync(
             file,
@@ -107,6 +132,13 @@ public class TeacherDocumentService : ITeacherDocumentService
         };
 
         var savedDocument = await _documentRepository.AddAsync(document);
+
+        // Increment document count in subscription
+        await _subscriptionService.IncrementDocumentCountAsync(userId);
+
+        // Log activity
+        await _activityService.LogDocumentUploadAsync(userId, savedDocument.Id, file.FileName);
+
         return MapToDto(savedDocument);
     }
 
@@ -154,6 +186,9 @@ public class TeacherDocumentService : ITeacherDocumentService
             document.BlobContainerName,
             document.BlobFileName);
 
+        // Log activity before deletion
+        await _activityService.LogDocumentDeleteAsync(userId, documentId, document.OriginalFileName);
+
         // Soft delete from database
         return await _documentRepository.DeleteAsync(documentId);
     }
@@ -194,7 +229,8 @@ public class TeacherDocumentService : ITeacherDocumentService
             document.BlobFileName);
 
         // Prepare email
-        var subject = $"Document from Bihar Teacher Portal - {document.Teacher.TeacherName}";
+        var teacherName = document.Teacher?.TeacherName ?? "Teacher";
+        var subject = $"Document from Bihar Teacher Portal - {teacherName}";
         var body = $@"Dear {dto.RecipientName},
 
 {dto.Message}
@@ -203,7 +239,7 @@ Please find the attached document: {document.OriginalFileName}
 
 Document Details:
 - Type: {document.DocumentType} {(!string.IsNullOrEmpty(document.CustomDocumentType) ? $"({document.CustomDocumentType})" : "")}
-- Teacher: {document.Teacher.TeacherName}
+- Teacher: {teacherName}
 - Uploaded: {document.UploadedDate:yyyy-MM-dd}
 - Remarks: {document.Remarks}
 

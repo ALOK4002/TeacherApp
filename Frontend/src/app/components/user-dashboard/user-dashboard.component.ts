@@ -82,6 +82,10 @@ export class UserDashboardComponent implements OnInit {
     this.router.navigate(['/self-declaration']);
   }
 
+  navigateToActivity() {
+    this.router.navigate(['/my-activity']);
+  }
+
   logout() {
     this.authService.logout();
     this.router.navigate(['/login']);

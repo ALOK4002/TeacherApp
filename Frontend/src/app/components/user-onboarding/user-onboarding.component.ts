@@ -132,6 +132,10 @@ export class UserOnboardingComponent implements OnInit {
     return 'Approved';
   }
 
+  navigateToPaymentApproval() {
+    this.router.navigate(['/payment-approval']);
+  }
+
   logout() {
     this.authService.logout();
     this.router.navigate(['/login']);

@@ -9,10 +9,16 @@
         Manage user registrations and approvals
       </p>
     </div>
-    <button class="ms-Button ms-Button--secondary logout-btn" (click)="logout()">
-      <span class="education-icon">🚪</span>
-      Logout
-    </button>
+    <div class="header-actions">
+      <button class="ms-Button ms-Button--primary nav-btn" (click)="navigateToPaymentApproval()">
+        <span class="education-icon">💳</span>
+        Payment Approvals
+      </button>
+      <button class="ms-Button ms-Button--secondary logout-btn" (click)="logout()">
+        <span class="education-icon">🚪</span>
+        Logout
+      </button>
+    </div>
   </div>
 
   <!-- Tabs -->

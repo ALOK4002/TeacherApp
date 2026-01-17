@@ -16,6 +16,7 @@ import { AuthService } from '../../services/auth.service';
         </p>
         <div class="action-buttons">
           <a routerLink="/user-onboarding" class="btn-primary" *ngIf="isAdmin">👥 User Onboarding</a>
+          <a routerLink="/payment-approval" class="btn-primary" *ngIf="isAdmin">💳 Payment Approvals</a>
           <a routerLink="/schools" class="btn-primary" *ngIf="isAdmin">🏫 Manage Schools</a>
           <a routerLink="/teachers" class="btn-primary" *ngIf="isAdmin">👨‍🏫 Manage Teachers</a>
           <a routerLink="/teacher-report" class="btn-primary" *ngIf="isAdmin">📊 Teacher Report</a>
