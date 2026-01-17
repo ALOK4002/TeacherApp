@@ -155,7 +155,12 @@ export class PollCreateComponent implements OnInit {
       }
     });
 
-    this.pollService.createPoll(this.poll).subscribe({
+    const payload: CreatePoll = {
+      ...this.poll,
+      endDate: this.poll.endDate ? new Date(this.poll.endDate).toISOString() : undefined
+    };
+
+    this.pollService.createPoll(payload).subscribe({
       next: (poll) => {
         this.success = true;
         this.submitting = false;
